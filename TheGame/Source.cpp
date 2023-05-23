@@ -2,24 +2,28 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "menu.h"
+#include "Player.h"
+#include "Coin.h"
+#include <sstream>
 
 using namespace sf;
 const float GRAVITY = 0.5f;
 float velocity = 0.0f;
+bool onPlatform = false;
 bool una = true;
 int pagenum = 1000;
 void game() {
-    RenderWindow window(VideoMode(1366, 768), "THE GAME", Style::Fullscreen);
+    sf::RenderWindow window(sf::VideoMode(1366, 768), "THE GAME", sf::Style::Fullscreen);
     window.setFramerateLimit(60);
     window.setMouseCursorVisible(false);
-    View view(Vector2f(0.0f, 0.0f), Vector2f(400.0f, 200.0f));
+
+    sf::View view(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(400.0f, 200.0f));
 
     std::vector<sf::Texture> walkingFrames;
     for (int i = 1; i <= 2; i++) {
-        Texture frame;
+        sf::Texture frame;
         if (!frame.loadFromFile("player" + std::to_string(i) + ".png")) {
-
-            std::cerr << "Error loading frame " << i << std::endl;
+            std::cerr << "Error cargando el frame " << i << std::endl;
         }
         else {
             walkingFrames.push_back(frame);
@@ -27,63 +31,84 @@ void game() {
     }
 
     if (walkingFrames.empty()) {
-
+        // Lógica para manejar el caso de que no se hayan cargado los frames
     }
 
-    Clock animationTimer;
-    float frameTime = 0.4f;
+    sf::Clock animationTimer;
+    float frameTime = 0.2f;
 
-    Sprite player(walkingFrames[0]);
-    player.setPosition(683, 384);
+    Player player(sf::Vector2f(40.0f, 40.0f));
+    player.setTexture(walkingFrames[0]);
+    player.setPos(sf::Vector2f(683, 384));
 
-    Texture platformTexture;
+    sf::Texture platformTexture;
     if (!platformTexture.loadFromFile("platform.png")) {
-
+        // Lógica para manejar el error al cargar la textura
     }
-    Sprite platform(platformTexture);
+    sf::Sprite platform(platformTexture);
     platform.setPosition(683, 484);
     int currentFrame = 0;
 
-
-
     while (window.isOpen())
     {
-
-        Event event;
+        sf::Event event;
         while (window.pollEvent(event))
         {
-            // Close window: exit
-            if (event.type == Event::Closed)
+            if (event.type == sf::Event::Closed)
                 window.close();
         }
 
-        if (player.getGlobalBounds().intersects(platform.getGlobalBounds())) {
-            player.setPosition(player.getPosition().x, platform.getPosition().y - player.getGlobalBounds().height);
-            velocity = 0.0f;
+        sf::FloatRect playerBounds = player.getGlobalBounds();
+        sf::FloatRect platformBounds = platform.getGlobalBounds();
+
+        if (playerBounds.intersects(platformBounds)) {
+            if (velocity > 0) {
+                sf::Vector2f newPosition(player.getPosition().x, platform.getPosition().y - player.getGlobalBounds().height+20);
+                player.setPos(newPosition);
+                velocity = 0.0f;
+                onPlatform = true;
+            }
+            else {
+                sf::Vector2f newPosition(player.getPosition().x, platform.getPosition().y + platform.getGlobalBounds().height);
+                player.setPos(newPosition);
+                onPlatform = false;
+            }
         }
         else {
             velocity += GRAVITY;
-            player.move(0, velocity);
+            player.move(sf::Vector2f(0, velocity));
+            onPlatform = false;
         }
-        if (Keyboard::isKeyPressed(Keyboard::Left)) {
-            player.move(-1, 0);
+
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+            player.setFacingLeft(true);
+            player.move(sf::Vector2f(-1, 0));
             if (animationTimer.getElapsedTime().asSeconds() >= frameTime) {
                 currentFrame = (currentFrame + 1) % walkingFrames.size();
                 player.setTexture(walkingFrames[currentFrame]);
+                
                 animationTimer.restart();
             }
-        }
-        if (sf::Keyboard::isKeyPressed(Keyboard::Right)) {
-            player.move(1, 0);
+            }
+        
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            player.setFacingLeft(false);
+            player.move(sf::Vector2f(1, 0));
             if (animationTimer.getElapsedTime().asSeconds() >= frameTime) {
                 currentFrame = (currentFrame + 1) % walkingFrames.size();
                 player.setTexture(walkingFrames[currentFrame]);
+                
                 animationTimer.restart();
             }
         }
-        if (sf::Keyboard::isKeyPressed(Keyboard::Up) && player.getGlobalBounds().intersects(platform.getGlobalBounds())) {
-            velocity = -10.0f;
-            player.move(0, velocity);
+        
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && onPlatform) {
+            
+            while (velocity >= -10.00f) {
+                velocity = velocity - 1.00f;
+            }
+            player.move(sf::Vector2f(0, velocity));
             if (animationTimer.getElapsedTime().asSeconds() >= frameTime) {
                 currentFrame = (currentFrame + 1) % walkingFrames.size();
                 player.setTexture(walkingFrames[currentFrame]);
@@ -95,10 +120,10 @@ void game() {
             view.setCenter(player.getPosition().x, player.getPosition().y + 30);
             una = false;
         }
-        window.clear(Color::Blue);
+        window.clear(sf::Color::Blue);
         window.setView(view);
         window.draw(platform);
-        window.draw(player);
+        player.drawTo(window);
         window.display();
     }
 }
