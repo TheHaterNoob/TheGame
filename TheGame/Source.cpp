@@ -1,121 +1,122 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <iostream>
 #include "menu.h"
 #include "Player.h"
-#include "Coin.h"
-#include <sstream>
+#include "Platform.h"
 
 using namespace sf;
+
 const float GRAVITY = 0.5f;
-float velocity = 0.0f;
-bool onPlatform = false;
-bool una = true;
+const float JUMP_HEIGHT = 2.0f;
+const float FRAME_TIME = 0.2f;
 int pagenum = 1000;
-
+bool una = true;
 float jump = 2.00f;
-void game() {
-
-    sf::RenderWindow window(sf::VideoMode(1366, 768), "THE GAME", sf::Style::Fullscreen);
+void game()
+{
+    RenderWindow window(VideoMode(1366, 768), "THE GAME", Style::Fullscreen);
     window.setFramerateLimit(60);
     window.setMouseCursorVisible(false);
 
-    sf::View view(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(400.0f, 200.0f));
+    View view(Vector2f(0.0f, 0.0f), Vector2f(400.0f, 200.0f));
 
-    std::vector<sf::Texture> walkingFrames;
-    for (int i = 1; i <= 2; i++) {
-        sf::Texture frame;
-        if (!frame.loadFromFile("player" + std::to_string(i) + ".png")) {
-            std::cerr << "Error cargando el frame " << i << std::endl;
-        }
-        else {
-            walkingFrames.push_back(frame);
+    std::vector<Texture> walkingFrames(2);
+    for (int i = 1; i <= 2; i++)
+    {
+        if (!walkingFrames[i - 1].loadFromFile("player" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading frame " << i << std::endl;
         }
     }
 
-    if (walkingFrames.empty()) {
-        // Lógica para manejar el caso de que no se hayan cargado los frames
+    if (walkingFrames.empty())
+    {
+        // Logic to handle the case when no frames are loaded
     }
 
-    sf::Clock animationTimer;
-    float frameTime = 0.2f;
-
-    Player player(sf::Vector2f(40.0f, 40.0f));
-    player.setTexture(walkingFrames[0]);
-    player.setPos(sf::Vector2f(683, 384));
-
-    sf::Texture platformTexture;
-    if (!platformTexture.loadFromFile("platform.png")) {
-        // Lógica para manejar el error al cargar la textura
-    }
-    sf::Sprite platform(platformTexture);
-    platform.setPosition(683, 484);
+    Clock animationTimer;
     int currentFrame = 0;
 
+    Player player(Vector2f(40.0f, 40.0f));
+    player.setTexture(walkingFrames[0]);
+    player.setPos(Vector2f(683, 384));
+
+    Texture platformTexture;
+    if (!platformTexture.loadFromFile("platform.png"))
+    {
+        // Logic to handle the error when loading the platform texture
+    }
+    Platform platform(platformTexture, Vector2f(683, 484));
+
     Texture castleTexture;
-    if (!castleTexture.loadFromFile("fondo.png")) {
+    if (!castleTexture.loadFromFile("fondo.png"))
+    {
         std::cerr << "Error loading castle texture" << std::endl;
     }
 
     Sprite castle(castleTexture);
     castle.setPosition(435, 260);
 
+    bool onPlatform = false;
+    float velocity = 0.0f;
+
+
     while (window.isOpen())
     {
-        sf::Event event;
+        Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            if (event.type == Event::Closed)
+            {
                 window.close();
+            }
         }
 
-        sf::FloatRect playerBounds = player.getGlobalBounds();
-        sf::FloatRect platformBounds = platform.getGlobalBounds();
+        FloatRect playerBounds = player.getGlobalBounds();
+        FloatRect platformBounds = platform.getGlobalBounds();
 
-        if (playerBounds.intersects(platformBounds)) {
-            if (velocity > 0) {
-                sf::Vector2f newPosition(player.getPosition().x, platform.getPosition().y - player.getGlobalBounds().height+20);
+        if (playerBounds.intersects(platformBounds))
+        {
+            if (velocity > 0)
+            {
+                Vector2f newPosition(player.getPosition().x, platform.getPosition().y - player.getGlobalBounds().height + 20);
                 player.setPos(newPosition);
                 velocity = 0.0f;
                 onPlatform = true;
                 jump = 2.0f;
             }
-            else {
-                sf::Vector2f newPosition(player.getPosition().x, platform.getPosition().y + platform.getGlobalBounds().height);
-                player.setPos(newPosition);
-                onPlatform = false;
-            }
         }
-        else {
+        else
+        {
             velocity += GRAVITY;
-            player.move(sf::Vector2f(0, velocity));
-            
+            player.move(Vector2f(0, velocity));
         }
 
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+        if (Keyboard::isKeyPressed(Keyboard::Left))
+        {
             player.setFacingLeft(true);
-            player.move(sf::Vector2f(-1, 0));
-            if (animationTimer.getElapsedTime().asSeconds() >= frameTime) {
+            player.move(Vector2f(-1, 0));
+            if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME)
+            {
                 currentFrame = (currentFrame + 1) % walkingFrames.size();
                 player.setTexture(walkingFrames[currentFrame]);
-                
-                animationTimer.restart();
-            }
-            }
-        
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            player.setFacingLeft(false);
-            player.move(sf::Vector2f(1, 0));
-            if (animationTimer.getElapsedTime().asSeconds() >= frameTime) {
-                currentFrame = (currentFrame + 1) % walkingFrames.size();
-                player.setTexture(walkingFrames[currentFrame]);
-                
                 animationTimer.restart();
             }
         }
-        
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) ) {
+
+        if (Keyboard::isKeyPressed(Keyboard::Right))
+        {
+            player.setFacingLeft(false);
+            player.move(Vector2f(1, 0));
+            if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME)
+            {
+                currentFrame = (currentFrame + 1) % walkingFrames.size();
+                player.setTexture(walkingFrames[currentFrame]);
+                animationTimer.restart();
+            }
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
 
             if (onPlatform)
             {
@@ -125,94 +126,103 @@ void game() {
                 }
                 velocity -= jump;
                 jump = jump - 0.2f;
-                    if (jump < 0.0f)
-                    {
-                        jump=0.0f;
-                        onPlatform = false;
-                    }
+                if (jump < 0.0f)
+                {
+                    jump = 0.0f;
+                    onPlatform = false;
+                }
                 player.move(sf::Vector2f(0, velocity));
-                
-            }
-            
-            if (animationTimer.getElapsedTime().asSeconds() >= frameTime) {
-                currentFrame = (currentFrame + 1) % walkingFrames.size();
-                player.setTexture(walkingFrames[currentFrame]);
-                animationTimer.restart();
+
             }
         }
-        view.setCenter(player.getPosition().x, view.getCenter().y);
-        if (una) {
-            view.setCenter(player.getPosition().x, player.getPosition().y + 30);
-            una = false;
+
+            view.setCenter(player.getPosition().x, view.getCenter().y);
+            if (una)
+            {
+                view.setCenter(player.getPosition().x, player.getPosition().y + 30);
+                una = false;
+            }
+
+            window.clear(Color::Blue);
+            window.setView(view);
+            window.draw(castle);
+            platform.drawTo(window);
+            player.drawTo(window);
+            window.display();
         }
-        window.clear(sf::Color::Blue);
-        window.setView(view);
-        window.draw(castle);
-        window.draw(platform);
-        player.drawTo(window);
-        window.display();
     }
-}
-menu::menu(int width, int height) {
+
+
+menu::menu(int width, int height)
+{
     font.loadFromFile("fuente3.ttf");
 
     mainmenu[0].setFont(font);
-    mainmenu[0].setFillColor(Color{ 255, 255, 255 });
+    mainmenu[0].setFillColor(Color::White);
     mainmenu[0].setString("Play");
     mainmenu[0].setCharacterSize(120);
-    mainmenu[0].setPosition(Vector2f(400, height / (4)));
+    mainmenu[0].setPosition(Vector2f(400, height / 4));
 
     mainmenu[1].setFont(font);
     mainmenu[1].setFillColor(Color::Red);
-    mainmenu[1].setString("Instrucciones");
+    mainmenu[1].setString("Instructions");
     mainmenu[1].setCharacterSize(120);
-    mainmenu[1].setPosition(Vector2f(400, height / (4) + 200));
+    mainmenu[1].setPosition(Vector2f(400, height / 4 + 200));
 
     mainmenu[2].setFont(font);
     mainmenu[2].setFillColor(Color::Red);
     mainmenu[2].setString("Exit");
     mainmenu[2].setCharacterSize(120);
-    mainmenu[2].setPosition(Vector2f(400, height / (4) + 400));
+    mainmenu[2].setPosition(Vector2f(400, height / 4 + 400));
 
     selected = 0;
-
 }
 
 menu::~menu() {}
 
-void menu::setSelected(int n) {
+void menu::setSelected(int n)
+{
     selected = n;
 }
 
-void menu::draw(RenderWindow& window) {
+void menu::draw(RenderWindow& window)
+{
     for (int i = 0; i < 3; i++)
     {
         window.draw(mainmenu[i]);
     }
 }
 
-void menu::MoveDown() {
-    if (selected + 1 <= 3) {
+void menu::MoveDown()
+{
+    if (selected + 1 <= 3)
+    {
         mainmenu[selected].setFillColor(Color::Red);
         selected++;
-        if (selected == 3) {
+        if (selected == 3)
+        {
             selected = 0;
         }
-        mainmenu[selected].setFillColor(Color(255, 255, 255));
+        mainmenu[selected].setFillColor(Color::White);
     }
 }
 
-void menu::MoveUp() {
-    if (selected - 1 >= -1) {
+void menu::MoveUp()
+{
+    if (selected - 1 >= -1)
+    {
         mainmenu[selected].setFillColor(Color::Red);
         selected--;
-        if (selected == -1) {
+        if (selected == -1)
+        {
             selected = 2;
         }
-        mainmenu[selected].setFillColor(Color{ 255, 255, 255 });
+        mainmenu[selected].setFillColor(Color::White);
     }
 }
-void menu1() {
+
+void menu1()
+{
     RenderWindow window(VideoMode(1920, 1080), "Game");
     menu menu(1920, 1080);
     Texture mainmenubg;
@@ -220,50 +230,66 @@ void menu1() {
     Sprite bg;
     bg.setTexture(mainmenubg);
 
-    while (true) {
-        if (pagenum == 1000) {
-            while (window.isOpen()) {
+    while (true)
+    {
+        if (pagenum == 1000)
+        {
+            while (window.isOpen())
+            {
                 Event event;
-                while (window.pollEvent(event)) {
-                    if (event.type == Event::Closed) {
+                while (window.pollEvent(event))
+                {
+                    if (event.type == Event::Closed)
+                    {
                         window.close();
                         break;
                     }
-                    if (event.type == Event::KeyPressed) {
-                        if (event.key.code == Keyboard::Up) {
+                    if (event.type == Event::KeyPressed)
+                    {
+                        if (event.key.code == Keyboard::Up)
+                        {
                             menu.MoveUp();
                         }
-                        if (event.key.code == Keyboard::Down) {
+                        if (event.key.code == Keyboard::Down)
+                        {
                             menu.MoveDown();
                         }
-                        if (event.key.code == Keyboard::Return) {
-                            if (menu.pressed() == 0) {
+                        if (event.key.code == Keyboard::Return)
+                        {
+                            if (menu.pressed() == 0)
+                            {
                                 pagenum = 0;
                             }
-                            if (menu.pressed() == 1) {
+                            if (menu.pressed() == 1)
+                            {
                                 pagenum = 1;
                             }
-                            if (menu.pressed() == 2) {
+                            if (menu.pressed() == 2)
+                            {
                                 pagenum = -1;
                             }
                         }
                     }
                 }
                 window.clear();
-                if (pagenum != 1000) {
+                if (pagenum != 1000)
+                {
                     break;
                 }
                 window.draw(bg);
                 menu.draw(window);
                 window.display();
             }
-            if (pagenum == -1) {
+            if (pagenum == -1)
+            {
                 window.close();
                 break;
             }
-            if (pagenum == 0) {
-                window.close();
+            if (pagenum == 0)
+            {
                 game();
+                window.close();
+                
                 break;
             }
         }
@@ -273,4 +299,5 @@ void menu1() {
 int main()
 {
     menu1();
+    return 0;
 }
