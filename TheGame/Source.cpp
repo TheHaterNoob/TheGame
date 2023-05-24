@@ -12,7 +12,10 @@ float velocity = 0.0f;
 bool onPlatform = false;
 bool una = true;
 int pagenum = 1000;
+
+float jump = 2.00f;
 void game() {
+
     sf::RenderWindow window(sf::VideoMode(1366, 768), "THE GAME", sf::Style::Fullscreen);
     window.setFramerateLimit(60);
     window.setMouseCursorVisible(false);
@@ -67,6 +70,7 @@ void game() {
                 player.setPos(newPosition);
                 velocity = 0.0f;
                 onPlatform = true;
+                jump = 2.0f;
             }
             else {
                 sf::Vector2f newPosition(player.getPosition().x, platform.getPosition().y + platform.getGlobalBounds().height);
@@ -77,7 +81,7 @@ void game() {
         else {
             velocity += GRAVITY;
             player.move(sf::Vector2f(0, velocity));
-            onPlatform = false;
+            
         }
 
 
@@ -103,12 +107,25 @@ void game() {
             }
         }
         
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && onPlatform) {
-            
-            while (velocity >= -10.00f) {
-                velocity = velocity - 1.00f;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) ) {
+
+            if (onPlatform)
+            {
+                if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+                {
+                    onPlatform = false;
+                }
+                velocity -= jump;
+                jump = jump - 0.2f;
+                    if (jump < 0.0f)
+                    {
+                        jump=0.0f;
+                        onPlatform = false;
+                    }
+                player.move(sf::Vector2f(0, velocity));
+                
             }
-            player.move(sf::Vector2f(0, velocity));
+            
             if (animationTimer.getElapsedTime().asSeconds() >= frameTime) {
                 currentFrame = (currentFrame + 1) % walkingFrames.size();
                 player.setTexture(walkingFrames[currentFrame]);
