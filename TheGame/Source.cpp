@@ -52,6 +52,14 @@ void game() {
     platform.setPosition(683, 484);
     int currentFrame = 0;
 
+    Texture castleTexture;
+    if (!castleTexture.loadFromFile("fondo.png")) {
+        std::cerr << "Error loading castle texture" << std::endl;
+    }
+
+    Sprite castle(castleTexture);
+    castle.setPosition(435, 260);
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -139,6 +147,7 @@ void game() {
         }
         window.clear(sf::Color::Blue);
         window.setView(view);
+        window.draw(castle);
         window.draw(platform);
         player.drawTo(window);
         window.display();
