@@ -23,7 +23,7 @@ float velocity = 0.0f;
 sf::Clock clock1;
 
 bool isAttacking = false;
-
+bool isCrouching = false;
 int currentAttackFrame = 0;
 
 void game()
@@ -33,6 +33,12 @@ void game()
     window.setMouseCursorVisible(false);
 
     View view(Vector2f(0.0f, 0.0f), Vector2f(400.0f, 200.0f));
+
+    sf::Texture agacharseTexture;
+    if (!agacharseTexture.loadFromFile("agacharse.png"))
+    {
+        std::cerr << "Error loading agacharse texture" << std::endl;
+    }
 
     std::vector<Texture> walkingFrames(4);
     for (int i = 1; i <= 4; i++)
@@ -134,6 +140,13 @@ void game()
             }
         }
 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !isAttacking)
+        {
+            isCrouching = true;
+            // Cambiar la textura del personaje al sprite de agacharse
+            player.setTexture(agacharseTexture);
+        }
+
         if (playerBounds.intersects(platformBounds))
         {
             if (velocity > 0)
@@ -150,6 +163,18 @@ void game()
         {
             velocity += GRAVITY;
             player.move(Vector2f(0, velocity));
+        }
+
+        if (isCrouching)
+        {
+           
+        }
+
+        if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        {
+            isCrouching = false;
+           
+            player.setTexture(walkingFrames[currentFrame]);
         }
 
         if (!isDashing) {
