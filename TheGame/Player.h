@@ -5,6 +5,7 @@
 
 class Player  {
 public:
+    bool isFacingLeft;
     Player(sf::Vector2f size) {
         player.setSize(size);
         isFacingLeft = false;
@@ -70,5 +71,5 @@ private:
         }
     }
     sf::RectangleShape player;
-    bool isFacingLeft;
+    
 };

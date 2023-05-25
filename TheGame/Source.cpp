@@ -12,6 +12,15 @@ const float FRAME_TIME = 0.2f;
 int pagenum = 1000;
 bool una = true;
 float jump = 2.00f;
+bool isDashing = false;
+float dashTime = 0.0f;
+const float dashDuration = 0.3f; 
+const float dashDistance = 100.0f; 
+const float dashSpeed = dashDistance / dashDuration;
+float speed = 1.0f;
+bool onPlatform = false;
+float velocity = 0.0f;
+sf::Clock clock1;
 void game()
 {
     RenderWindow window(VideoMode(1366, 768), "THE GAME", Style::Fullscreen);
@@ -57,8 +66,7 @@ void game()
     Sprite castle(castleTexture);
     castle.setPosition(435, 260);
 
-    bool onPlatform = false;
-    float velocity = 0.0f;
+
 
 
     while (window.isOpen())
@@ -83,6 +91,7 @@ void game()
                 player.setPos(newPosition);
                 velocity = 0.0f;
                 onPlatform = true;
+                
                 jump = 2.0f;
             }
         }
@@ -92,48 +101,71 @@ void game()
             player.move(Vector2f(0, velocity));
         }
 
-        if (Keyboard::isKeyPressed(Keyboard::Left))
-        {
-            player.setFacingLeft(true);
-            player.move(Vector2f(-1, 0));
-            if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME)
-            {
-                currentFrame = (currentFrame + 1) % walkingFrames.size();
-                player.setTexture(walkingFrames[currentFrame]);
-                animationTimer.restart();
+        if (!isDashing) {
+            if (Keyboard::isKeyPressed(Keyboard::Left)) {
+                player.setFacingLeft(true);
+                player.move(Vector2f(-speed, 0));
+                if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
+                    currentFrame = (currentFrame + 1) % walkingFrames.size();
+                    player.setTexture(walkingFrames[currentFrame]);
+                    animationTimer.restart();
+                }
+            }
+
+            if (Keyboard::isKeyPressed(Keyboard::Right)) {
+                player.setFacingLeft(false);
+                player.move(Vector2f(speed, 0));
+                if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
+                    currentFrame = (currentFrame + 1) % walkingFrames.size();
+                    player.setTexture(walkingFrames[currentFrame]);
+                    animationTimer.restart();
+                }
+            }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                if (onPlatform) {
+                    if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                        onPlatform = false;
+                    }
+                    velocity -= jump;
+                    jump = jump - 0.2f;
+                    if (jump < 0.0f) {
+                        jump = 0.0f;
+                        onPlatform = false;
+                    }
+                    player.move(sf::Vector2f(0, velocity));
+                }
             }
         }
-
-        if (Keyboard::isKeyPressed(Keyboard::Right))
-        {
-            player.setFacingLeft(false);
-            player.move(Vector2f(1, 0));
-            if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME)
-            {
-                currentFrame = (currentFrame + 1) % walkingFrames.size();
-                player.setTexture(walkingFrames[currentFrame]);
-                animationTimer.restart();
-            }
+        sf::Time deltaTime = clock1.restart();
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q) && !isDashing) {
+            isDashing = true;
+            dashTime = 0.0f;
+            
         }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+        if (isDashing) {
+            
+            dashTime += deltaTime.asSeconds();
+            
+            if (dashTime <= dashDuration) {
+                // Calculate the distance to move based on the elapsed time
+                float distance = dashSpeed * deltaTime.asSeconds();
 
-            if (onPlatform)
-            {
-                if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-                {
-                    onPlatform = false;
+                if (player.isFacingLeft) {
+                    player.move(sf::Vector2f(-distance, 0));
                 }
-                velocity -= jump;
-                jump = jump - 0.2f;
-                if (jump < 0.0f)
-                {
-                    jump = 0.0f;
-                    onPlatform = false;
+                else {
+                    player.move(sf::Vector2f(distance, 0));
                 }
-                player.move(sf::Vector2f(0, velocity));
-
             }
+            else {
+                isDashing = false;
+            }
+            
+        }
+        else {
+          
         }
 
             view.setCenter(player.getPosition().x, view.getCenter().y);
