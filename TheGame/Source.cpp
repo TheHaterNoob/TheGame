@@ -21,6 +21,11 @@ float speed = 1.0f;
 bool onPlatform = false;
 float velocity = 0.0f;
 sf::Clock clock1;
+
+bool isAttacking = false;
+
+int currentAttackFrame = 0;
+
 void game()
 {
     RenderWindow window(VideoMode(1366, 768), "THE GAME", Style::Fullscreen);
@@ -48,6 +53,15 @@ void game()
         if (!walkingFrames[i - 1].loadFromFile("player" + std::to_string(i) + ".png"))
         {
             std::cerr << "Error loading frame " << i << std::endl;
+        }
+    }
+
+    std::vector<sf::Texture> attackFrames(4);
+    for (int i = 1; i <= 4; i++)
+    {
+        if (!attackFrames[i - 1].loadFromFile("ataque1_" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading attack frame " << i << std::endl;
         }
     }
 
@@ -95,6 +109,25 @@ void game()
 
         FloatRect playerBounds = player.getGlobalBounds();
         FloatRect platformBounds = platform.getGlobalBounds();
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::H) && !isAttacking)
+        {
+            isAttacking = true;
+            currentAttackFrame = 0;
+        }
+
+        if (isAttacking)
+        {
+            if (currentAttackFrame < attackFrames.size())
+            {
+                player.setTexture(attackFrames[currentAttackFrame]);
+                currentAttackFrame++;
+            }
+            else
+            {
+                isAttacking = false;
+            }
+        }
 
         if (playerBounds.intersects(platformBounds))
         {
