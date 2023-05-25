@@ -43,14 +43,10 @@ void game()
         }
     }
 
-    if (walkingFrames.empty())
+    std::vector<Texture> dashFrames(2);
+    for (int i = 1; i <= 2; i++)
     {
-        // Logic to handle the case when no frames are loaded
-    }
-    std::vector<Texture> walkingFrames(2);
-    for (int i = 1; i <= 4; i++)
-    {
-        if (!walkingFrames[i - 1].loadFromFile("player" + std::to_string(i) + ".png"))
+        if (!dashFrames[i - 1].loadFromFile("dash" + std::to_string(i) + ".png"))
         {
             std::cerr << "Error loading frame " << i << std::endl;
         }
@@ -72,6 +68,7 @@ void game()
 
     Clock animationTimer;
     int currentFrame = 0;
+    int currentDashFrame = 0;
 
     Player player(Vector2f(40.0f, 40.0f));
     player.setTexture(walkingFrames[0]);
@@ -110,22 +107,30 @@ void game()
         FloatRect playerBounds = player.getGlobalBounds();
         FloatRect platformBounds = platform.getGlobalBounds();
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::H) && !isAttacking)
-        {
-            isAttacking = true;
-            currentAttackFrame = 0;
-        }
+
 
         if (isAttacking)
         {
             if (currentAttackFrame < attackFrames.size())
             {
-                player.setTexture(attackFrames[currentAttackFrame]);
+                sf::Texture& attackFrame = attackFrames[currentAttackFrame];
+                player.setTexture(attackFrame);
+
+                // Adjust the size and position of the player sprite to match the attack frame
+                sf::Vector2f playerSize = player.getSize();
+                sf::Vector2f attackFrameSize = sf::Vector2f(attackFrame.getSize());
+                sf::Vector2f scaleFactor = sf::Vector2f(attackFrameSize.x / playerSize.x, attackFrameSize.y / playerSize.y);
+
+                player.setScale(scaleFactor);
+                player.setOrigin(playerSize * 0.5f);
+
                 currentAttackFrame++;
             }
             else
             {
                 isAttacking = false;
+                player.setScale(1.0f, 1.0f); // Reset the scale back to normal
+                
             }
         }
 
@@ -148,6 +153,11 @@ void game()
         }
 
         if (!isDashing) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::H) && !isAttacking)
+            {
+                isAttacking = true;
+                currentAttackFrame = 0;
+            }
             if (Keyboard::isKeyPressed(Keyboard::Left)) {
                 player.setFacingLeft(true);
                 player.move(Vector2f(-speed, 0));
@@ -197,7 +207,11 @@ void game()
             if (dashTime <= dashDuration) {
                 // Calculate the distance to move based on the elapsed time
                 float distance = dashSpeed * deltaTime.asSeconds();
-
+                if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
+                    currentDashFrame = (currentDashFrame + 1) % dashFrames.size();
+                    player.setTexture(dashFrames[currentDashFrame]);
+                    animationTimer.restart();
+                }
                 if (player.isFacingLeft) {
                     player.move(sf::Vector2f(-distance, 0));
                 }
@@ -207,6 +221,7 @@ void game()
             }
             else {
                 isDashing = false;
+                player.setTexture(walkingFrames[currentFrame]);
             }
             
         }

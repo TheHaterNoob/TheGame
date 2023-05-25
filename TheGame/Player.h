@@ -55,7 +55,15 @@ public:
     void setPosition(sf::Vector2f position) {
         player.setPosition(position);
     }
-
+    void setOrigin(sf::Vector2f origin) {
+        player.setOrigin(origin);
+    }
+    void setScale(sf::Vector2f scaleFactor) {
+        player.setScale(scaleFactor);
+    }
+    void setScale(float scaleX, float scaleY) {
+        player.setScale(scaleX, scaleY);
+    }
 
 
 
