@@ -29,8 +29,21 @@ void game()
 
     View view(Vector2f(0.0f, 0.0f), Vector2f(400.0f, 200.0f));
 
+    std::vector<Texture> walkingFrames(4);
+    for (int i = 1; i <= 4; i++)
+    {
+        if (!walkingFrames[i - 1].loadFromFile("player" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading frame " << i << std::endl;
+        }
+    }
+
+    if (walkingFrames.empty())
+    {
+        // Logic to handle the case when no frames are loaded
+    }
     std::vector<Texture> walkingFrames(2);
-    for (int i = 1; i <= 2; i++)
+    for (int i = 1; i <= 4; i++)
     {
         if (!walkingFrames[i - 1].loadFromFile("player" + std::to_string(i) + ".png"))
         {
