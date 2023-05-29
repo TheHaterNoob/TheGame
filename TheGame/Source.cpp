@@ -31,13 +31,12 @@ int currentWalkingFrame = 0;
 bool isClimbing = false;
 
 
-
-
 std::vector<Platform> platforms;
 
 void game()
 {
 
+    
     //BASE DE ESCALERA
     sf::Texture escaleraTexture;
     if (!escaleraTexture.loadFromFile("escalera1.png"))
@@ -102,6 +101,8 @@ void game()
             std::cerr << "Error loading attack frame " << i << std::endl;
         }
     }
+
+    
 
     if (walkingFrames.empty())
     {
