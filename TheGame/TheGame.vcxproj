@@ -134,12 +134,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AttackCube.cpp" />
     <ClCompile Include="cube.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AttackCube.h" />
     <ClInclude Include="cube.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="menu.h" />

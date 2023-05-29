@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Platform.h"
 #include "Cube.h"
+#include "AttackCube.h"
 
 using namespace sf;
 
@@ -27,6 +28,8 @@ sf::Clock clock1;
 bool isAttacking = false;
 bool isCrouching = false;
 int currentAttackFrame = 0;
+int currentWalkingFrame = 0;
+
 
 std::vector<Platform> platforms;
 
@@ -91,7 +94,10 @@ void game()
     cube.setPosition(Vector2f(680, 420));
     cube.setColor(sf::Color(255, 0, 0, 60));
 
-    Player player(Vector2f(70.0f, 45.0f));
+    AttackCube attack(Vector2f(20.00f, 38.00f));
+    attack.setColor(sf::Color(0, 255, 0, 60));
+
+    Player player(Vector2f(100.0f, 45.0f));
     player.setTexture(walkingFrames[0]);
     
 
@@ -127,16 +133,16 @@ void game()
     
     while (window.isOpen())
     {
+
         if (player.isFacingLeft)
         {
-            Vector2f vec(cube.getX() + 5, cube.getY() + 14);
-             player.setPosition(vec);
-        }
-        else {
-            Vector2f vec(cube.getX() + 16, cube.getY()+14);
+            Vector2f vec(cube.getX()+16, cube.getY() + 14);
             player.setPosition(vec);
         }
-
+        else {
+            Vector2f vec(cube.getX()+4 , cube.getY() + 14);
+            player.setPosition(vec);
+        }
         Event event;
         while (window.pollEvent(event))
         {
@@ -154,10 +160,13 @@ void game()
 
         if (isAttacking)
         {
+            Vector2f veck(cube.getX() + 30, cube.getY() + 0);
             if (currentAttackFrame < attackFrames.size())
             {
                 sf::Texture& attackFrame = attackFrames[currentAttackFrame];
                 player.setTexture(attackFrame);
+                
+                attack.setPosition(veck);
                 currentAttackFrame++;
             }
             else
@@ -197,14 +206,16 @@ void game()
                 isAttacking = true;
               
             }
-            if (Keyboard::isKeyPressed(Keyboard::Left)) {
+            if (Keyboard::isKeyPressed(Keyboard::Left)&& !Keyboard::isKeyPressed(Keyboard::Right)) {
+
                 player.setFacingLeft(true);
                 cube.move(Vector2f(-speed, 0));
                 if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
-                    currentFrame = (currentFrame + 1) % walkingFrames.size();
-                    player.setTexture(walkingFrames[currentFrame]);
+                    currentWalkingFrame = (currentWalkingFrame + 1) % walkingFrames.size();
+                    player.setTexture(walkingFrames[currentWalkingFrame]);
                     animationTimer.restart();
                 }
+                
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !isAttacking)
             {
@@ -212,14 +223,15 @@ void game()
                 // Cambiar la textura del personaje al sprite de agacharse
                 player.setTexture(agacharseTexture);
             }
-            if (Keyboard::isKeyPressed(Keyboard::Right)) {
+            if (Keyboard::isKeyPressed(Keyboard::Right)&& !Keyboard::isKeyPressed(Keyboard::Left)) {
                 player.setFacingLeft(false);
                 cube.move(Vector2f(speed, 0));
                 if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
-                    currentFrame = (currentFrame + 1) % walkingFrames.size();
-                    player.setTexture(walkingFrames[currentFrame]);
+                    currentWalkingFrame = (currentWalkingFrame + 1) % walkingFrames.size();
+                    player.setTexture(walkingFrames[currentWalkingFrame]);
                     animationTimer.restart();
                 }
+                
             }
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
@@ -237,6 +249,7 @@ void game()
                 }
             }
         }
+
         sf::Time deltaTime = clock1.restart();
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q) && !isDashing) {
             isDashing = true;
@@ -311,7 +324,7 @@ void game()
             
             player.drawTo(window);
             cube.draw(window);
-
+            attack.draw(window);
             window.display();
             
         }
