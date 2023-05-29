@@ -1,6 +1,5 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-
 #include "menu.h"
 #include "Player.h"
 #include "Platform.h"
@@ -29,13 +28,35 @@ bool isAttacking = false;
 bool isCrouching = false;
 int currentAttackFrame = 0;
 int currentWalkingFrame = 0;
+bool isClimbing = false;
+
 
 
 std::vector<Platform> platforms;
 
-
 void game()
 {
+
+    //BASE DE ESCALERA
+    sf::Texture escaleraTexture;
+    if (!escaleraTexture.loadFromFile("escalera1.png"))
+    {
+        std::cerr << "Error loading escalera1 texture" << std::endl;
+    }
+
+    Platform escalera1(escaleraTexture, Vector2f(857, 430));
+
+
+    //LADDER
+    sf::Texture woodTexture;
+    if (!woodTexture.loadFromFile("escalar.png"))
+    {
+        std::cerr << "Error loading ladder texture" << std::endl;
+    }
+
+    Platform wood(woodTexture, Vector2f(855, 430));
+
+
     RenderWindow window(VideoMode(1366, 768), "THE GAME", Style::Fullscreen);
     window.setFramerateLimit(60);
     window.setMouseCursorVisible(false);
@@ -122,11 +143,15 @@ void game()
     platforms.push_back(Platform(platformTexture, Vector2f(596, 496)));
     platforms.push_back(Platform(platformTexture, Vector2f(683, 496)));
     platforms.push_back(Platform(platformTexture, Vector2f(770, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(857, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(944, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(1031, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(1118, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(1205, 496)));
+ 
+    //PLATAFORMA AEREA
+    platforms.push_back(Platform(platformTexture, Vector2f(857, 430)));
+    platforms.push_back(Platform(platformTexture, Vector2f(944, 430)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1031, 430)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1118, 430)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1205, 430)));
+
+
 
     
     
@@ -199,6 +224,30 @@ void game()
             velocity += GRAVITY;
             cube.move(Vector2f(0, velocity));
         }
+
+        platforms.push_back(escalera1);
+        platforms.push_back(wood);
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        {
+            if (cubeBounds.intersects(wood.getGlobalBounds()))
+            {
+                isClimbing = true;
+                cube.move(sf::Vector2f(0, -speed)); // Mueve al personaje hacia arriba
+            }
+        }
+
+        if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || !cubeBounds.intersects(wood.getGlobalBounds()))
+        {
+            isClimbing = false;
+        }
+
+        if (!isClimbing)
+        {
+            // Resto del código para mover al personaje, detectar colisiones, etc.
+        }
+
+
 
         if (!isDashing) {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::H) && !isAttacking)
@@ -326,7 +375,9 @@ void game()
             cube.draw(window);
             attack.draw(window);
             window.display();
-            
+            escalera1.drawTo(window);
+            wood.drawTo(window);
+
         }
     }
 
