@@ -32,6 +32,7 @@ bool isClimbing = false;
 
 
 
+
 std::vector<Platform> platforms;
 
 void game()
@@ -121,6 +122,10 @@ void game()
     Player player(Vector2f(100.0f, 45.0f));
     player.setTexture(walkingFrames[0]);
     
+    std::vector<Texture> escalandoFrames(1);
+    if (!escalandoFrames[0].loadFromFile("escalando.png")) {
+        std::cerr << "Error loading escalando frame" << std::endl;
+    }
 
     Texture platformTexture;
     if (!platformTexture.loadFromFile("suelo1.png"))
@@ -151,14 +156,38 @@ void game()
     platforms.push_back(Platform(platformTexture, Vector2f(1118, 430)));
     platforms.push_back(Platform(platformTexture, Vector2f(1205, 430)));
 
+    sf::Time deltaTime = clock1.restart();
 
-
-    
-    
     
     while (window.isOpen())
     {
+        int escalandoFrame = 0;
+        float climbSpeed = -1.0f;
 
+
+        if (isClimbing) {
+            if (escalandoFrame < escalandoFrames.size()) {
+                sf::Texture& escalandoFrameTexture = escalandoFrames[escalandoFrame];
+                player.setTexture(escalandoFrameTexture);
+                escalandoFrame++;
+            }
+            else {
+                escalandoFrame = 0;
+            }
+        }
+        else {
+            // Resto del código para manejar la animación de caminata, etc.
+        }
+
+        if (isClimbing) {
+            float distance = climbSpeed * deltaTime.asSeconds();
+            cube.move(sf::Vector2f(0, -distance)); // Mueve al personaje hacia arriba
+        }
+
+
+        if (isClimbing) {
+            player.setTexture(escalandoFrames[0]);
+        }
         if (player.isFacingLeft)
         {
             Vector2f vec(cube.getX()+16, cube.getY() + 14);
@@ -179,6 +208,7 @@ void game()
 
         FloatRect cubeBounds = cube.getGlobalBounds();
         bool onAnyPlatform = false;
+
 
 
 
@@ -248,6 +278,14 @@ void game()
         }
 
 
+        if (cubeBounds.intersects(wood.getGlobalBounds())) {
+            if (player.isFacingLeft) {
+                cube.move(Vector2f(speed, 0)); // Revertir el movimiento hacia la izquierda
+            }
+            else {
+                cube.move(Vector2f(-speed, 0)); // Revertir el movimiento hacia la derecha
+            }
+        }
 
         if (!isDashing) {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::H) && !isAttacking)
@@ -259,6 +297,8 @@ void game()
 
                 player.setFacingLeft(true);
                 cube.move(Vector2f(-speed, 0));
+
+
                 if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
                     currentWalkingFrame = (currentWalkingFrame + 1) % walkingFrames.size();
                     player.setTexture(walkingFrames[currentWalkingFrame]);
