@@ -14,7 +14,7 @@ public:
         return sprite.getGlobalBounds();
     }
 
-    void drawTo(sf::RenderWindow& window) {
+    void drawTo(sf::RenderWindow& window) const {
         window.draw(sprite);
     }
     sf::Vector2f getPosition() const {

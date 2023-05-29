@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+
 #include "menu.h"
 #include "Player.h"
 #include "Platform.h"
@@ -27,11 +28,19 @@ bool isAttacking = false;
 bool isCrouching = false;
 int currentAttackFrame = 0;
 
+std::vector<Platform> platforms;
+
+
 void game()
 {
     RenderWindow window(VideoMode(1366, 768), "THE GAME", Style::Fullscreen);
     window.setFramerateLimit(60);
     window.setMouseCursorVisible(false);
+
+    const sf::Vector2f backgroundLimitTopLeft(720, 0);
+    const sf::Vector2f backgroundLimitBottomRight(995, 421);
+
+ 
 
     View view(Vector2f(0.0f, 0.0f), Vector2f(400.0f, 200.0f));
 
@@ -87,7 +96,7 @@ void game()
     
 
     Texture platformTexture;
-    if (!platformTexture.loadFromFile("platform.png"))
+    if (!platformTexture.loadFromFile("suelo1.png"))
     {
         // Logic to handle the error when loading the platform texture
     }
@@ -103,8 +112,19 @@ void game()
     castle.setPosition(435, 260);
 
 
+    platforms.push_back(Platform(platformTexture, Vector2f(509, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(596, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(683, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(770, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(857, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(944, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1031, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1118, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1205, 496)));
 
-
+    
+    
+    
     while (window.isOpen())
     {
         if (player.isFacingLeft)
@@ -127,7 +147,8 @@ void game()
         }
 
         FloatRect cubeBounds = cube.getGlobalBounds();
-        FloatRect platformBounds = platform.getGlobalBounds();
+        bool onAnyPlatform = false;
+
 
 
 
@@ -149,20 +170,23 @@ void game()
 
 
 
-        if (cubeBounds.intersects(platformBounds))
-        {
-            if (velocity > 0)
-            {
-                Vector2f newPosition(cube.getX(), platform.getPosition().y - cube.getGlobalBounds().height );
-                cube.setPosition(newPosition);
-                velocity = 0.0f;
-                onPlatform = true;
-                
-                jump = 2.0f;
+        for (const auto& platform : platforms) {
+            FloatRect platformBounds = platform.getGlobalBounds();
+
+            if (cubeBounds.intersects(platformBounds)) {
+                if (velocity > 0) {
+                    Vector2f newPosition(cube.getX(), platform.getPosition().y - cube.getGlobalBounds().height);
+                    cube.setPosition(newPosition);
+                    velocity = 0.0f;
+                    onPlatform = true;
+                    onAnyPlatform = true;
+                    jump = 2.0f;
+                    break; // Se encontró una plataforma, no es necesario seguir verificando las demás
+                }
             }
         }
-        else
-        {
+
+        if (!onAnyPlatform) {
             velocity += GRAVITY;
             cube.move(Vector2f(0, velocity));
         }
@@ -220,6 +244,8 @@ void game()
             
         }
 
+
+
         if (isDashing) {
             
             dashTime += deltaTime.asSeconds();
@@ -255,12 +281,33 @@ void game()
                 view.setCenter(cube.getX(), cube.getY() );
                 una = false;
             }
+
+            // Después de actualizar la posición del personaje principal:
+            sf::Vector2f viewCenter = view.getCenter();
+
+            // Asegurarse de que la vista no se salga de los límites del fondo
+            if (viewCenter.x < backgroundLimitTopLeft.x)
+                viewCenter.x = backgroundLimitTopLeft.x;
+            else if (viewCenter.x > backgroundLimitBottomRight.x)
+                viewCenter.x = backgroundLimitBottomRight.x;
+
+            if (viewCenter.y < backgroundLimitTopLeft.y)
+                viewCenter.y = backgroundLimitTopLeft.y;
+            else if (viewCenter.y > backgroundLimitBottomRight.y)
+                viewCenter.y = backgroundLimitBottomRight.y;
+
+            view.setCenter(viewCenter);
+
+
             
             window.clear(Color::Blue);
             window.setView(view);
             
             window.draw(castle);
-            platform.drawTo(window);
+            
+            for (const auto& platform : platforms) {
+                platform.drawTo(window);
+            }
             
             player.drawTo(window);
             cube.draw(window);
