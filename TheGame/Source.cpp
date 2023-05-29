@@ -3,6 +3,7 @@
 #include "menu.h"
 #include "Player.h"
 #include "Platform.h"
+#include "Cube.h"
 
 using namespace sf;
 
@@ -55,6 +56,7 @@ void game()
         if (!dashFrames[i - 1].loadFromFile("dash" + std::to_string(i) + ".png"))
         {
             std::cerr << "Error loading frame " << i << std::endl;
+           
         }
     }
 
@@ -76,9 +78,13 @@ void game()
     int currentFrame = 0;
     int currentDashFrame = 0;
 
-    Player player(Vector2f(40.0f, 40.0f));
+    Cube cube(Vector2f(20.00f, 38.00f));
+    cube.setPosition(Vector2f(680, 420));
+    cube.setColor(sf::Color(255, 0, 0, 60));
+
+    Player player(Vector2f(70.0f, 45.0f));
     player.setTexture(walkingFrames[0]);
-    player.setPos(Vector2f(683, 384));
+    
 
     Texture platformTexture;
     if (!platformTexture.loadFromFile("platform.png"))
@@ -101,6 +107,16 @@ void game()
 
     while (window.isOpen())
     {
+        if (player.isFacingLeft)
+        {
+            Vector2f vec(cube.getX() + 5, cube.getY() + 14);
+             player.setPosition(vec);
+        }
+        else {
+            Vector2f vec(cube.getX() + 16, cube.getY()+14);
+            player.setPosition(vec);
+        }
+
         Event event;
         while (window.pollEvent(event))
         {
@@ -110,7 +126,7 @@ void game()
             }
         }
 
-        FloatRect playerBounds = player.getGlobalBounds();
+        FloatRect cubeBounds = cube.getGlobalBounds();
         FloatRect platformBounds = platform.getGlobalBounds();
 
 
@@ -121,38 +137,24 @@ void game()
             {
                 sf::Texture& attackFrame = attackFrames[currentAttackFrame];
                 player.setTexture(attackFrame);
-
-                // Adjust the size and position of the player sprite to match the attack frame
-                sf::Vector2f playerSize = player.getSize();
-                sf::Vector2f attackFrameSize = sf::Vector2f(attackFrame.getSize());
-                sf::Vector2f scaleFactor = sf::Vector2f(attackFrameSize.x / playerSize.x, attackFrameSize.y / playerSize.y);
-
-                player.setScale(scaleFactor);
-                player.setOrigin(playerSize * 0.5f);
-
                 currentAttackFrame++;
             }
             else
             {
                 isAttacking = false;
-                player.setScale(1.0f, 1.0f); // Reset the scale back to normal
-                
+                currentAttackFrame = 0;
+
             }
         }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !isAttacking)
-        {
-            isCrouching = true;
-            // Cambiar la textura del personaje al sprite de agacharse
-            player.setTexture(agacharseTexture);
-        }
 
-        if (playerBounds.intersects(platformBounds))
+
+        if (cubeBounds.intersects(platformBounds))
         {
             if (velocity > 0)
             {
-                Vector2f newPosition(player.getPosition().x, platform.getPosition().y - player.getGlobalBounds().height + 20);
-                player.setPos(newPosition);
+                Vector2f newPosition(cube.getX(), platform.getPosition().y - cube.getGlobalBounds().height );
+                cube.setPosition(newPosition);
                 velocity = 0.0f;
                 onPlatform = true;
                 
@@ -162,40 +164,33 @@ void game()
         else
         {
             velocity += GRAVITY;
-            player.move(Vector2f(0, velocity));
-        }
-
-        if (isCrouching)
-        {
-           
-        }
-
-        if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-        {
-            isCrouching = false;
-           
-            player.setTexture(walkingFrames[currentFrame]);
+            cube.move(Vector2f(0, velocity));
         }
 
         if (!isDashing) {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::H) && !isAttacking)
             {
                 isAttacking = true;
-                currentAttackFrame = 0;
+              
             }
             if (Keyboard::isKeyPressed(Keyboard::Left)) {
                 player.setFacingLeft(true);
-                player.move(Vector2f(-speed, 0));
+                cube.move(Vector2f(-speed, 0));
                 if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
                     currentFrame = (currentFrame + 1) % walkingFrames.size();
                     player.setTexture(walkingFrames[currentFrame]);
                     animationTimer.restart();
                 }
             }
-
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !isAttacking)
+            {
+                isCrouching = true;
+                // Cambiar la textura del personaje al sprite de agacharse
+                player.setTexture(agacharseTexture);
+            }
             if (Keyboard::isKeyPressed(Keyboard::Right)) {
                 player.setFacingLeft(false);
-                player.move(Vector2f(speed, 0));
+                cube.move(Vector2f(speed, 0));
                 if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
                     currentFrame = (currentFrame + 1) % walkingFrames.size();
                     player.setTexture(walkingFrames[currentFrame]);
@@ -214,7 +209,7 @@ void game()
                         jump = 0.0f;
                         onPlatform = false;
                     }
-                    player.move(sf::Vector2f(0, velocity));
+                    cube.move(sf::Vector2f(0, velocity));
                 }
             }
         }
@@ -238,10 +233,10 @@ void game()
                     animationTimer.restart();
                 }
                 if (player.isFacingLeft) {
-                    player.move(sf::Vector2f(-distance, 0));
+                    cube.move(sf::Vector2f(-distance, 0));
                 }
                 else {
-                    player.move(sf::Vector2f(distance, 0));
+                    cube.move(sf::Vector2f(distance, 0));
                 }
             }
             else {
@@ -254,19 +249,24 @@ void game()
           
         }
 
-            view.setCenter(player.getPosition().x, view.getCenter().y);
+            view.setCenter(cube.getX(), view.getCenter().y);
             if (una)
             {
-                view.setCenter(player.getPosition().x, player.getPosition().y + 30);
+                view.setCenter(cube.getX(), cube.getY() );
                 una = false;
             }
-
+            
             window.clear(Color::Blue);
             window.setView(view);
+            
             window.draw(castle);
             platform.drawTo(window);
+            
             player.drawTo(window);
+            cube.draw(window);
+
             window.display();
+            
         }
     }
 

@@ -27,6 +27,9 @@ public:
     int getY() {
         return player.getPosition().y;
     }
+    int getX() {
+        return player.getPosition().x;
+    }
     sf::Vector2f getSize() {
         return player.getSize();
     }
