@@ -184,6 +184,7 @@ void game()
         float climbSpeed = -1.0f;
 
 
+
         if (isClimbing) {
             if (escalandoFrame < escalandoFrames.size()) {
                 sf::Texture& escalandoFrameTexture = escalandoFrames[escalandoFrame];
