@@ -9,7 +9,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <cmath>
 
-using namespace sf;
+
 
 const float GRAVITY = 0.5f;
 const float JUMP_HEIGHT = 2.0f;
@@ -30,8 +30,11 @@ sf::Clock clock1;
 
 bool isAttacking = false;
 bool isCrouching = false;
+const Vector2f backgroundLimitTopLeft(720, 0);
+const Vector2f backgroundLimitBottomRight(995, 421);
 int currentAttackFrame = 0;
 int currentWalkingFrame = 0;
+int currentDashFrame = 0;
 bool isClimbing = false;
 
 
@@ -74,8 +77,7 @@ void game()
     window.setFramerateLimit(60);
     window.setMouseCursorVisible(false);
 
-    const sf::Vector2f backgroundLimitTopLeft(720, 0);
-    const sf::Vector2f backgroundLimitBottomRight(995, 421);
+
 
     View view(Vector2f(0.0f, 0.0f), Vector2f(400.0f, 200.0f));
 
@@ -121,8 +123,7 @@ void game()
     }
 
     Clock animationTimer;
-    int currentFrame = 0;
-    int currentDashFrame = 0;
+
 
     Cube cube(Vector2f(20.00f, 38.00f));
     cube.setPosition(Vector2f(680, 420));
@@ -174,7 +175,8 @@ void game()
     platforms.push_back(Platform(platformTexture, Vector2f(1205, 430)));
 
     sf::Time deltaTime = clock1.restart();
-
+    platforms.push_back(escalera1);
+    platforms.push_back(wood);
     
     while (window.isOpen())
     {
@@ -302,8 +304,7 @@ void game()
            bad.move(Vector2f(0, Mvelocity));
         }
 
-        platforms.push_back(escalera1);
-        platforms.push_back(wood);
+        
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         {
@@ -413,7 +414,7 @@ void game()
             }
             else {
                 isDashing = false;
-                player.setTexture(walkingFrames[currentFrame]);
+                player.setTexture(walkingFrames[currentWalkingFrame]);
             }
             
         }
