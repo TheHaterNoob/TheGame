@@ -5,6 +5,9 @@
 #include "Platform.h"
 #include "Cube.h"
 #include "AttackCube.h"
+#include "Enemy.h"
+#include <SFML/System/Vector2.hpp>
+#include <cmath>
 
 using namespace sf;
 
@@ -22,6 +25,7 @@ const float dashSpeed = dashDistance / dashDuration;
 float speed = 1.0f;
 bool onPlatform = false;
 float velocity = 0.0f;
+float Mvelocity = 0.0f;
 sf::Clock clock1;
 
 bool isAttacking = false;
@@ -32,6 +36,15 @@ bool isClimbing = false;
 
 
 std::vector<Platform> platforms;
+sf::Vector2f normalize(const sf::Vector2f& vector)
+{
+    float length = std::sqrt(vector.x * vector.x + vector.y * vector.y);
+
+    if (length != 0.0f)
+        return sf::Vector2f(vector.x / length, vector.y / length);
+    else
+        return vector;
+}
 
 void game()
 {
@@ -63,8 +76,6 @@ void game()
 
     const sf::Vector2f backgroundLimitTopLeft(720, 0);
     const sf::Vector2f backgroundLimitBottomRight(995, 421);
-
- 
 
     View view(Vector2f(0.0f, 0.0f), Vector2f(400.0f, 200.0f));
 
@@ -119,6 +130,11 @@ void game()
 
     AttackCube attack(Vector2f(20.00f, 38.00f));
     attack.setColor(sf::Color(0, 255, 0, 60));
+    
+
+    Enemy bad(Vector2f(20.00f, 38.00f));
+    bad.setColor(sf::Color(0, 0, 255, 60));
+    bad.setPosition(Vector2f(700, 420));
 
     Player player(Vector2f(100.0f, 45.0f));
     player.setTexture(walkingFrames[0]);
@@ -208,34 +224,49 @@ void game()
         }
 
         FloatRect cubeBounds = cube.getGlobalBounds();
+        FloatRect malitoBounds = bad.getGlobalBounds();
         bool onAnyPlatform = false;
 
-
-
-
-
+        Vector2f veck;
         if (isAttacking)
         {
-            Vector2f veck(cube.getX() + 30, cube.getY() + 0);
+            if (player.isFacingLeft)
+            {
+                veck = Vector2f(cube.getX() - 30, cube.getY() + 0);
+            }
+            else {
+                veck = Vector2f(cube.getX() + 30, cube.getY() + 0);
+            }
             if (currentAttackFrame < attackFrames.size())
             {
                 sf::Texture& attackFrame = attackFrames[currentAttackFrame];
                 player.setTexture(attackFrame);
-                
+
                 attack.setPosition(veck);
                 currentAttackFrame++;
+                if (attack.getGlobalBounds().intersects(malitoBounds))
+                {
+                    // Calculate the direction from the attack cube to the bad cube
+                    Vector2f direction = bad.getPosition() - attack.getPosition();
+                    direction = normalize(direction);
+
+                    // Push the bad cube away in the direction of the attack
+                    float pushForce = 50.0f;
+                    float pushUpForce = 20.0f;
+                    bad.move(direction * pushForce);
+                    bad.move(Vector2f(0.0f, -pushUpForce));
+                }
             }
             else
             {
+                attack.setPosition(sf::Vector2f(-100.0f, -100.0f));
                 isAttacking = false;
                 currentAttackFrame = 0;
-
             }
         }
 
 
-
-        for (const auto& platform : platforms) {
+       for (const auto& platform : platforms) {
             FloatRect platformBounds = platform.getGlobalBounds();
 
             if (cubeBounds.intersects(platformBounds)) {
@@ -249,11 +280,26 @@ void game()
                     break; // Se encontró una plataforma, no es necesario seguir verificando las demás
                 }
             }
+
+        }
+        for (const auto& platform : platforms)
+        {
+            FloatRect platformBounds = platform.getGlobalBounds();
+            if (malitoBounds.intersects(platformBounds)) {
+                if (Mvelocity > 0) {
+                    Vector2f newPosition(bad.getX(), platform.getPosition().y - bad.getGlobalBounds().height);
+                    bad.setPosition(newPosition);
+                    Mvelocity = 0.0f;
+                    break; // Se encontró una plataforma, no es necesario seguir verificando las demás
+                }
+            }
         }
 
         if (!onAnyPlatform) {
             velocity += GRAVITY;
+            Mvelocity += GRAVITY;
             cube.move(Vector2f(0, velocity));
+           bad.move(Vector2f(0, Mvelocity));
         }
 
         platforms.push_back(escalera1);
@@ -277,7 +323,6 @@ void game()
         {
             // Resto del código para mover al personaje, detectar colisiones, etc.
         }
-
 
         if (cubeBounds.intersects(wood.getGlobalBounds())) {
             if (player.isFacingLeft) {
@@ -347,8 +392,6 @@ void game()
             
         }
 
-
-
         if (isDashing) {
             
             dashTime += deltaTime.asSeconds();
@@ -415,10 +458,11 @@ void game()
             player.drawTo(window);
             cube.draw(window);
             attack.draw(window);
-            window.display();
+
             escalera1.drawTo(window);
             wood.drawTo(window);
-
+            bad.draw(window);
+            window.display();
         }
     }
 

@@ -1,10 +1,10 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-class AttackCube{
+class Enemy {
 public:
-    AttackCube(sf::Vector2f size) {
+    Enemy(sf::Vector2f size) {
         shape.setSize(size);
-        shape.setFillColor(sf::Color(0, 255, 0, 10));
+        shape.setFillColor(sf::Color(0, 0, 255, 10));
     }
 
     void setPosition(sf::Vector2f position) {
