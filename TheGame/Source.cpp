@@ -31,7 +31,7 @@ sf::Clock clock1;
 bool isAttacking = false;
 bool isCrouching = false;
 const Vector2f backgroundLimitTopLeft(720, 0);
-const Vector2f backgroundLimitBottomRight(995, 421);
+const Vector2f backgroundLimitBottomRight(2130, 421);
 int currentAttackFrame = 0;
 int currentWalkingFrame = 0;
 int currentDashFrame = 0;
@@ -152,6 +152,55 @@ void game()
     }
     Platform platform(platformTexture, Vector2f(683, 484));
 
+
+    Texture puertaTexture;
+    if (!puertaTexture.loadFromFile("puerta.png"))
+    {
+        // Logic to handle the error when loading the platform texture
+    }
+    Sprite puerta(puertaTexture);
+    puerta.setPosition(2250, 427);
+
+    Texture signoTexture;
+    if (!signoTexture.loadFromFile("letrero1.png"))
+    {
+        // Logic to handle the error when loading the platform texture
+    }
+    Sprite signo(signoTexture);
+    signo.setPosition(570, 465);
+
+
+    Texture lamparaTexture;
+    if (!lamparaTexture.loadFromFile("lampara.png"))
+    {
+        //error
+    }
+    Sprite lampara(lamparaTexture);
+    lampara.setPosition(900, 375);
+
+    Sprite lampara2(lamparaTexture);
+    lampara2.setPosition(1050, 375);
+
+    Sprite lampara3(lamparaTexture);
+    lampara3.setPosition(1200, 375);
+
+    Sprite lampara4(lamparaTexture);
+    lampara4.setPosition(1350, 375);
+
+    Texture trampaTexture;
+    if (!trampaTexture.loadFromFile("spikes.png"))
+    {
+        //error
+    }
+    Sprite trampa(trampaTexture);
+    trampa.setPosition(1470, 478);
+
+    Sprite trampa2(trampaTexture);
+    trampa2.setPosition(1485, 478);
+
+    Sprite trampa3(trampaTexture);
+    trampa3.setPosition(1495, 478);
+
     Texture castleTexture;
     if (!castleTexture.loadFromFile("fondo.png"))
     {
@@ -160,6 +209,14 @@ void game()
 
     Sprite castle(castleTexture);
     castle.setPosition(435, 260);
+
+    sf::Sprite fondoDuplicadoSprite(castleTexture);
+    fondoDuplicadoSprite.setPosition(1380, 260);
+
+
+   
+
+
 
 
     platforms.push_back(Platform(platformTexture, Vector2f(509, 496)));
@@ -173,6 +230,19 @@ void game()
     platforms.push_back(Platform(platformTexture, Vector2f(1031, 430)));
     platforms.push_back(Platform(platformTexture, Vector2f(1118, 430)));
     platforms.push_back(Platform(platformTexture, Vector2f(1205, 430)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1292, 430)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1379, 430)));
+
+    platforms.push_back(Platform(platformTexture, Vector2f(1466, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1553, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1640, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1727, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1814, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1901, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1988, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(2075, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(2162, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(2249, 496)));
 
     sf::Time deltaTime = clock1.restart();
     platforms.push_back(escalera1);
@@ -450,8 +520,20 @@ void game()
             
             window.clear(Color::Blue);
             window.setView(view);
+            window.draw(fondoDuplicadoSprite);
             
             window.draw(castle);
+            window.draw(puerta);
+            window.draw(signo);
+            window.draw(lampara);
+            window.draw(lampara2);
+            window.draw(lampara3);
+            window.draw(lampara4);
+            window.draw(trampa);
+            window.draw(trampa2);
+            window.draw(trampa3);
+
+
             
             for (const auto& platform : platforms) {
                 platform.drawTo(window);
@@ -460,6 +542,9 @@ void game()
             player.drawTo(window);
             cube.draw(window);
             attack.draw(window);
+            
+
+
 
             escalera1.drawTo(window);
             wood.drawTo(window);
