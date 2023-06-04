@@ -52,6 +52,9 @@ bool wasAKeyPressed = false;
 bool canAttackS;
 bool wasSKeyPressed = false;
 
+bool canDash;
+bool wasDashPressed = false;
+
 
 
 std::vector<Platform> platforms;
@@ -478,10 +481,16 @@ void game()
 
 
         sf::Time deltaTime = clock1.restart();
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q) && !isDashing) {
+        bool isDashKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Q);
+        if (isDashKeyPressed && !wasDashPressed && !isDashing) {
             isDashing = true;
             dashTime = 0.0f;
-            
+            canDash = false;
+        }
+        wasDashPressed = isDashKeyPressed;
+        if (!isDashKeyPressed)
+        {
+            canDash = true;
         }
 
         if (isAttacking2)
