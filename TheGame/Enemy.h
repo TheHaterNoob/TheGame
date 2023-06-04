@@ -6,6 +6,7 @@ public:
         shape.setSize(size);
         shape.setFillColor(sf::Color(0, 0, 255, 10));
     }
+    sf::Vector2f velocity;
 
     void setPosition(sf::Vector2f position) {
         shape.setPosition(position);
@@ -33,7 +34,13 @@ public:
     sf::Vector2f getPosition() {
         return shape.getPosition();
     }
+    void update(float deltaTime)
+    {
+        // Update position based on velocity
+        setPosition(getPosition() + velocity * deltaTime);
+    }
 private:
     sf::RectangleShape shape;
+    
 };
 

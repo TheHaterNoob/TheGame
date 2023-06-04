@@ -31,6 +31,9 @@ public:
     void move(sf::Vector2f distance) {
         shape.move(distance);
     }
+    sf::Vector2f getPosition() {
+        return shape.getPosition();
+    }
 private:
     sf::RectangleShape shape;
 };

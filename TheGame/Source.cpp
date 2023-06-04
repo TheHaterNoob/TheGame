@@ -38,6 +38,14 @@ int currentAttackFrame = 0;
 int currentWalkingFrame = 0;
 int currentDashFrame = 0;
 bool isClimbing = false;
+const float attackCooldown = 20.33f;
+float attackTimer = 0.0f;
+float pushDuration = 0.5f;    // Duration of the push in seconds
+float pushTimer = 0.0f;       // Timer for push duration
+float pushForce = 0.69f;     // Force to push the enemy
+bool isPushing = false;
+sf::Vector2f enemyPosition;
+sf::Vector2f pushDirection;
 
 
 std::vector<Platform> platforms;
@@ -259,9 +267,16 @@ void game()
     sf::Time deltaTime = clock1.restart();
     platforms.push_back(escalera1);
     platforms.push_back(wood);
-    
+    float dt = deltaTime.asSeconds();
+
+    // Update the attack cooldown timer
+
     while (window.isOpen())
     {
+        if (attackTimer > 0.0f)
+        {
+            attackTimer -= dt;
+        }
         int escalandoFrame = 0;
         float climbSpeed = -1.0f;
 
@@ -315,44 +330,6 @@ void game()
         Vector2f veck;
 
 
-        if (isAttacking)
-        {
-            if (player.isFacingLeft)
-            {
-                veck = Vector2f(cube.getX() - 30, cube.getY() + 0);
-            }
-            else {
-                veck = Vector2f(cube.getX() + 30, cube.getY() + 0);
-            }
-            if (currentAttackFrame < attackFrames.size())
-            {
-                sf::Texture& attackFrame = attackFrames[currentAttackFrame];
-                player.setTexture(attackFrame);
-
-                attack.setPosition(veck);
-                currentAttackFrame++;
-                if (attack.getGlobalBounds().intersects(malitoBounds))
-                {
-                    // Calculate the direction from the attack cube to the bad cube
-                    Vector2f direction = bad.getPosition() - attack.getPosition();
-                    direction = normalize(direction);
-
-                    // Push the bad cube away in the direction of the attack
-                    float pushForce = 50.0f;
-                    float pushUpForce = 20.0f;
-                    bad.move(direction * pushForce);
-                    bad.move(Vector2f(0.0f, -pushUpForce));
-                }
-            }
-            else
-            {
-                attack.setPosition(sf::Vector2f(-100.0f, -100.0f));
-                isAttacking = false;
-                currentAttackFrame = 0;
-            }
-        }
-
-
        for (const auto& platform : platforms) {
             FloatRect platformBounds = platform.getGlobalBounds();
 
@@ -384,7 +361,7 @@ void game()
 
         if (!onAnyPlatform) {
             velocity += GRAVITY;
-            Mvelocity += GRAVITY;
+            Mvelocity += (GRAVITY-0.23f);
             cube.move(Vector2f(0, velocity));
            bad.move(Vector2f(0, Mvelocity));
         }
@@ -420,9 +397,10 @@ void game()
         }
 
         if (!isDashing) {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::H) && !isAttacking)
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !isAttacking && !isAttacking2 && attackTimer <= 0.0f)
             {
                 isAttacking = true;
+                attackTimer = attackCooldown;
               
             }
             if (Keyboard::isKeyPressed(Keyboard::Left)&& !Keyboard::isKeyPressed(Keyboard::Right)) {
@@ -440,16 +418,11 @@ void game()
             }
 
 
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !isAttacking && !isAttacking2 && attackTimer <= 0.0f)
             {
                 isAttacking2 = true;
+                attackTimer = attackCooldown;
             }
-
-
-
-
-
-
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !isAttacking)
             {
@@ -507,23 +480,53 @@ void game()
 
                 attack.setPosition(veck);
                 currentAttackFrame++;
-                if (attack.getGlobalBounds().intersects(malitoBounds))
+                if (attack.getGlobalBounds().intersects(bad.getGlobalBounds()))
                 {
-                    // Calculate the direction from the attack cube to the bad cube
-                    Vector2f direction = bad.getPosition() - attack.getPosition();
-                    direction = normalize(direction);
+                    pushDirection = normalize(sf::Vector2f(bad.getPosition().x - cube.getPosition().x, bad.getPosition().y - cube.getPosition().y));
 
-                    // Push the bad cube away in the direction of the attack
-                    float pushForce = 50.0f;
-                    float pushUpForce = 20.0f;
-                    bad.move(direction * pushForce);
-                    bad.move(Vector2f(0.0f, -pushUpForce));
+                    // Start pushing the enemy
+                    isPushing = true;
+                    pushTimer = 0.0f;
+                    Mvelocity = 0.0f;
                 }
             }
             else
             {
                 attack.setPosition(sf::Vector2f(-100.0f, -100.0f));
                 isAttacking2 = false;
+                currentAttackFrame = 0;
+            }
+        }
+        if (isAttacking)
+        {
+            if (player.isFacingLeft)
+            {
+                veck = Vector2f(cube.getX() - 30, cube.getY() + 0);
+            }
+            else {
+                veck = Vector2f(cube.getX() + 30, cube.getY() + 0);
+            }
+            if (currentAttackFrame < attackFrames.size())
+            {
+                sf::Texture& attackFrame = attackFrames[currentAttackFrame];
+                player.setTexture(attackFrame);
+
+                attack.setPosition(veck);
+                currentAttackFrame++;
+                if (attack.getGlobalBounds().intersects(bad.getGlobalBounds()))
+                {
+                    pushDirection = normalize(sf::Vector2f(bad.getPosition().x - cube.getPosition().x, bad.getPosition().y - cube.getPosition().y));
+
+                    // Start pushing the enemy
+                    isPushing = true;
+                    pushTimer = 0.0f;
+                    Mvelocity = 0.0f;
+                }
+            }
+            else
+            {
+                attack.setPosition(sf::Vector2f(-100.0f, -100.0f));
+                isAttacking = false;
                 currentAttackFrame = 0;
             }
         }
@@ -553,8 +556,28 @@ void game()
             }
             
         }
-        else {
-          
+
+        if (isPushing)
+        {
+
+            // Calculate the push distance based on elapsed time and push duration
+            float pushDistance = pushForce * (1.0f - pushTimer / pushDuration);
+
+            // Apply the push force to move the enemy
+            sf::Vector2f pushVector = pushDirection * pushDistance;
+            pushVector.y -= pushDistance * 3.0f;  // Adjust the vertical component of the push force
+
+            bad.move(pushVector);
+
+            // Update the push timer
+            pushTimer += deltaTime.asSeconds();
+
+            // Check if the push duration has ended
+            if (pushTimer >= pushDuration)
+            {
+                // Stop pushing the enemy
+                isPushing = false;
+            }
         }
 
             view.setCenter(cube.getX(), view.getCenter().y);
