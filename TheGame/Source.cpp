@@ -27,6 +27,8 @@ bool onPlatform = false;
 float velocity = 0.0f;
 float Mvelocity = 0.0f;
 sf::Clock clock1;
+bool isAttacking2 = false;
+
 
 bool isAttacking = false;
 bool isCrouching = false;
@@ -61,6 +63,16 @@ void game()
     }
 
     Platform escalera1(escaleraTexture, Vector2f(857, 430));
+
+    std::vector<sf::Texture> attackFrames2(6);
+    for (int i = 1; i <= 6; i++)
+    {
+        if (!attackFrames2[i - 1].loadFromFile("2ataque_" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading second attack frame " << i << std::endl;
+        }
+    }
+
 
 
     //LADDER
@@ -301,6 +313,8 @@ void game()
         bool onAnyPlatform = false;
 
         Vector2f veck;
+
+
         if (isAttacking)
         {
             if (player.isFacingLeft)
@@ -424,6 +438,19 @@ void game()
                 }
                 
             }
+
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
+            {
+                isAttacking2 = true;
+            }
+
+
+
+
+
+
+
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !isAttacking)
             {
                 isCrouching = true;
@@ -462,6 +489,43 @@ void game()
             isDashing = true;
             dashTime = 0.0f;
             
+        }
+
+        if (isAttacking2)
+        {
+            if (player.isFacingLeft)
+            {
+                veck = Vector2f(cube.getX() - 30, cube.getY() + 1);
+            }
+            else {
+                veck = Vector2f(cube.getX() + 30, cube.getY() + 1);
+            }
+            if (currentAttackFrame < attackFrames2.size())
+            {
+                sf::Texture& attackFrame = attackFrames2[currentAttackFrame];
+                player.setTexture(attackFrame);
+
+                attack.setPosition(veck);
+                currentAttackFrame++;
+                if (attack.getGlobalBounds().intersects(malitoBounds))
+                {
+                    // Calculate the direction from the attack cube to the bad cube
+                    Vector2f direction = bad.getPosition() - attack.getPosition();
+                    direction = normalize(direction);
+
+                    // Push the bad cube away in the direction of the attack
+                    float pushForce = 50.0f;
+                    float pushUpForce = 20.0f;
+                    bad.move(direction * pushForce);
+                    bad.move(Vector2f(0.0f, -pushUpForce));
+                }
+            }
+            else
+            {
+                attack.setPosition(sf::Vector2f(-100.0f, -100.0f));
+                isAttacking2 = false;
+                currentAttackFrame = 0;
+            }
         }
 
         if (isDashing) {
