@@ -38,7 +38,7 @@ int currentAttackFrame = 0;
 int currentWalkingFrame = 0;
 int currentDashFrame = 0;
 bool isClimbing = false;
-const float attackCooldown = 60.0f;
+const float attackCooldown = 10.33f;
 float attackTimer = 0.0f;
 float pushDuration = 0.5f;    // Duration of the push in seconds
 float pushTimer = 0.0f;       // Timer for push duration
@@ -46,6 +46,12 @@ float pushForce = 0.69f;     // Force to push the enemy
 bool isPushing = false;
 sf::Vector2f enemyPosition;
 sf::Vector2f pushDirection;
+bool canAttackA;
+bool wasAKeyPressed = false;
+
+bool canAttackS;
+bool wasSKeyPressed = false;
+
 
 
 std::vector<Platform> platforms;
@@ -382,10 +388,6 @@ void game()
             isClimbing = false;
         }
 
-        if (!isClimbing)
-        {
-            // Resto del código para mover al personaje, detectar colisiones, etc.
-        }
 
         if (cubeBounds.intersects(wood.getGlobalBounds())) {
             if (player.isFacingLeft) {
@@ -397,65 +399,83 @@ void game()
         }
 
         if (!isDashing) {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !isAttacking && !isAttacking2 && attackTimer <= 0.0f)
-            {
-                isAttacking = true;
-                attackTimer = attackCooldown;
-              
-            }
-            if (Keyboard::isKeyPressed(Keyboard::Left)&& !Keyboard::isKeyPressed(Keyboard::Right)) {
+            bool isAKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
+                if (isAKeyPressed && !wasAKeyPressed  && !isAttacking && !isAttacking2 && attackTimer <= 0.0f && canAttackA)
+                {
+                    isAttacking = true;
+                    attackTimer = attackCooldown;
+                    canAttackA = false;
 
-                player.setFacingLeft(true);
-                cube.move(Vector2f(-speed, 0));
-
-
-                if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
-                    currentWalkingFrame = (currentWalkingFrame + 1) % walkingFrames.size();
-                    player.setTexture(walkingFrames[currentWalkingFrame]);
-                    animationTimer.restart();
+                }
+                wasAKeyPressed = isAKeyPressed;
+                if (!isAKeyPressed)
+                {
+                    canAttackA = true;
+                }
+                bool isSKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::S);
+                if (isSKeyPressed && !wasSKeyPressed && !isAttacking && !isAttacking2 && attackTimer <= 0.0f)
+                {
+                    isAttacking2 = true;
+                    attackTimer = attackCooldown;
+                    canAttackS = false;
                 }
                 
-            }
-
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !isAttacking && !isAttacking2 && attackTimer <= 0.0f)
-            {
-                isAttacking2 = true;
-                attackTimer = attackCooldown;
-            }
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !isAttacking)
-            {
-                isCrouching = true;
-                // Cambiar la textura del personaje al sprite de agacharse
-                player.setTexture(agacharseTexture);
-            }
-            if (Keyboard::isKeyPressed(Keyboard::Right)&& !Keyboard::isKeyPressed(Keyboard::Left)) {
-                player.setFacingLeft(false);
-                cube.move(Vector2f(speed, 0));
-                if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
-                    currentWalkingFrame = (currentWalkingFrame + 1) % walkingFrames.size();
-                    player.setTexture(walkingFrames[currentWalkingFrame]);
-                    animationTimer.restart();
+                wasSKeyPressed = isSKeyPressed;
+                if (!isSKeyPressed)
+                {
+                    canAttackS = true;
                 }
-                
-            }
 
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                if (onPlatform) {
-                    if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                        onPlatform = false;
+                if (Keyboard::isKeyPressed(Keyboard::Left) && !Keyboard::isKeyPressed(Keyboard::Right)) {
+
+                    player.setFacingLeft(true);
+                    cube.move(Vector2f(-speed, 0));
+
+
+                    if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
+                        currentWalkingFrame = (currentWalkingFrame + 1) % walkingFrames.size();
+                        player.setTexture(walkingFrames[currentWalkingFrame]);
+                        animationTimer.restart();
                     }
-                    velocity -= jump;
-                    jump = jump - 0.2f;
-                    if (jump < 0.0f) {
-                        jump = 0.0f;
-                        onPlatform = false;
+
+                }
+
+
+
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !isAttacking)
+                {
+                    isCrouching = true;
+                    // Cambiar la textura del personaje al sprite de agacharse
+                    player.setTexture(agacharseTexture);
+                }
+                if (Keyboard::isKeyPressed(Keyboard::Right) && !Keyboard::isKeyPressed(Keyboard::Left)) {
+                    player.setFacingLeft(false);
+                    cube.move(Vector2f(speed, 0));
+                    if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
+                        currentWalkingFrame = (currentWalkingFrame + 1) % walkingFrames.size();
+                        player.setTexture(walkingFrames[currentWalkingFrame]);
+                        animationTimer.restart();
                     }
-                    cube.move(sf::Vector2f(0, velocity));
+
+                }
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                    if (onPlatform) {
+                        if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                            onPlatform = false;
+                        }
+                        velocity -= jump;
+                        jump = jump - 0.2f;
+                        if (jump < 0.0f) {
+                            jump = 0.0f;
+                            onPlatform = false;
+                        }
+                        cube.move(sf::Vector2f(0, velocity));
+                    }
                 }
             }
-        }
+
 
         sf::Time deltaTime = clock1.restart();
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q) && !isDashing) {
