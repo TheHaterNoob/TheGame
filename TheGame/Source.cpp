@@ -26,7 +26,8 @@ float velocity = 0.0f;
 float Mvelocity = 0.0f;
 sf::Clock clock1;
 bool isAttacking2 = false;
-
+const float ROLL_FRAME_SPEED = 2.0f;
+const float ROLL_DISTANCE = 2.0f;
 
 bool isAttacking = false;
 bool isCrouching = false;
@@ -53,7 +54,11 @@ bool wasSKeyPressed = false;
 bool canDash;
 bool wasDashPressed = false;
 
+bool isRolling = false;
+int currentRollFrame = 0;
+bool isPerformingAction = false;
 
+int currentIdleFrame = 0;
 
 std::vector<Platform> platforms;
 sf::Vector2f normalize(const sf::Vector2f& vector)
@@ -133,12 +138,30 @@ void game()
         }
     }
 
+    std::vector<sf::Texture> idleFrames(10);
+    for (int i = 1; i <= 10; i++)
+    {
+        if (!idleFrames[i - 1].loadFromFile("idle" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading idle frame " << i << std::endl;
+        }
+    }
+
     std::vector<sf::Texture> attackFrames(4);
     for (int i = 1; i <= 4; i++)
     {
         if (!attackFrames[i - 1].loadFromFile("ataque1_" + std::to_string(i) + ".png"))
         {
             std::cerr << "Error loading attack frame " << i << std::endl;
+        }
+    }
+
+    std::vector<sf::Texture> rollFrames(12);
+    for (int i = 1; i <= 12; i++)
+    {
+        if (!rollFrames[i - 1].loadFromFile("roll" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading roll frame " << i << std::endl;
         }
     }
 
@@ -280,6 +303,10 @@ void game()
 
     while (window.isOpen())
     {
+
+        isPerformingAction = false;
+
+
         if (attackTimer > 0.0f)
         {
             attackTimer -= dt;
@@ -384,6 +411,15 @@ void game()
             }
         }
 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) && !isAttacking && !isCrouching && !isDashing)
+        {
+            isRolling = true;
+            currentRollFrame = 0;
+            float rollFrameTime = FRAME_TIME * ROLL_FRAME_SPEED;
+           
+        }
+
+
         if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || !cubeBounds.intersects(wood.getGlobalBounds()))
         {
             isClimbing = false;
@@ -407,11 +443,14 @@ void game()
                     attackTimer = attackCooldown;
                     canAttackA = false;
 
+                   
                 }
                 wasAKeyPressed = isAKeyPressed;
                 if (!isAKeyPressed)
                 {
                     canAttackA = true;
+
+                    
                 }
                 bool isSKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::S);
                 if (isSKeyPressed && !wasSKeyPressed && !isAttacking && !isAttacking2 && attackTimer <= 0.0f)
@@ -419,12 +458,15 @@ void game()
                     isAttacking2 = true;
                     attackTimer = attackCooldown;
                     canAttackS = false;
+
+                    
                 }
                 
                 wasSKeyPressed = isSKeyPressed;
                 if (!isSKeyPressed)
                 {
                     canAttackS = true;
+                   
                 }
 
                 if (Keyboard::isKeyPressed(Keyboard::Left) && !Keyboard::isKeyPressed(Keyboard::Right)) {
@@ -438,7 +480,7 @@ void game()
                         player.setTexture(walkingFrames[currentWalkingFrame]);
                         animationTimer.restart();
                     }
-
+                    
                 }
 
 
@@ -449,6 +491,7 @@ void game()
                     isCrouching = true;
                     // Cambiar la textura del personaje al sprite de agacharse
                     player.setTexture(agacharseTexture);
+
                 }
                 if (Keyboard::isKeyPressed(Keyboard::Right) && !Keyboard::isKeyPressed(Keyboard::Left)) {
                     player.setFacingLeft(false);
@@ -491,6 +534,39 @@ void game()
             canDash = true;
         }
 
+        if (isRolling)
+        {
+            currentRollFrame++;
+            if (currentRollFrame >= rollFrames.size())
+            {
+                // Se ha completado la animación de roll
+                isRolling = false;
+                // Restablecer el frame actual para otras animaciones si es necesario
+                currentWalkingFrame = 0;
+            }
+            else
+            {
+                player.setTexture(rollFrames[currentRollFrame]);
+            }
+            animationTimer.restart();
+
+
+            float rollMovement = ROLL_DISTANCE * dt;
+            if (player.isFacingLeft)
+            {
+                cube.move(sf::Vector2f(-rollMovement, 0.0f));
+            }
+            else
+            {
+                cube.move(sf::Vector2f(rollMovement, 0.0f));
+            }
+
+            currentIdleFrame = 0;
+            animationTimer.restart();
+
+            isPerformingAction = true;
+        }
+
         if (isAttacking2)
         {
             if (player.isFacingLeft)
@@ -516,12 +592,21 @@ void game()
                     pushTimer = 0.0f;
                     Mvelocity = 0.0f;
                 }
+                currentIdleFrame = 0;
+                animationTimer.restart();
+
+                isPerformingAction = true;
             }
             else
             {
                 attack.setPosition(sf::Vector2f(-100.0f, -100.0f));
                 isAttacking2 = false;
                 currentAttackFrame = 0;
+
+                currentIdleFrame = 0;
+                animationTimer.restart();
+
+                isPerformingAction = true;
             }
         }
         if (isAttacking)
@@ -549,6 +634,11 @@ void game()
                     pushTimer = 0.0f;
                     Mvelocity = 0.0f;
                 }
+
+                currentIdleFrame = 0;
+                animationTimer.restart();
+
+                isPerformingAction = true;
             }
             else
             {
@@ -556,6 +646,10 @@ void game()
                 isAttacking = false;
                 currentAttackFrame = 0;
             }
+            currentIdleFrame = 0;
+            animationTimer.restart();
+
+            isPerformingAction = true;
         }
 
         if (isDashing) {
@@ -582,6 +676,7 @@ void game()
                 player.setTexture(walkingFrames[currentWalkingFrame]);
             }
             
+            
         }
 
         if (isPushing)
@@ -604,6 +699,25 @@ void game()
             {
                 // Stop pushing the enemy
                 isPushing = false;
+            }
+            currentIdleFrame = 0;
+            animationTimer.restart();
+
+            isPerformingAction = true;
+        }
+
+        if (!isPerformingAction)
+        {
+            // Ejecutar la animación de idle
+            if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME)
+            {
+                if (currentIdleFrame >= idleFrames.size())
+                {
+                    currentIdleFrame = 0;
+                }
+                player.setTexture(idleFrames[currentIdleFrame]);
+                currentIdleFrame++;
+                animationTimer.restart();
             }
         }
 
