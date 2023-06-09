@@ -9,8 +9,6 @@
 #include <SFML/System/Vector2.hpp>
 #include <cmath>
 
-
-
 const float GRAVITY = 0.5f;
 const float JUMP_HEIGHT = 2.0f;
 const float FRAME_TIME = 0.2f;
