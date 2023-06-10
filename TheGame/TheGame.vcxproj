@@ -136,6 +136,7 @@
   <ItemGroup>
     <ClCompile Include="AttackCube.cpp" />
     <ClCompile Include="cube.cpp" />
+    <ClCompile Include="Enemigo.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -144,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="AttackCube.h" />
     <ClInclude Include="cube.h" />
+    <ClInclude Include="Enemigo.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="menu.h" />

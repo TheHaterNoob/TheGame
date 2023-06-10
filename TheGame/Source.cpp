@@ -8,6 +8,7 @@
 #include "Enemy.h"
 #include <SFML/System/Vector2.hpp>
 #include <cmath>
+#include "Enemigo.h"
 
 const float GRAVITY = 0.5f;
 const float JUMP_HEIGHT = 2.0f;
@@ -128,6 +129,15 @@ void game()
         }
     }
 
+    std::vector<Texture> idleEnemigo(4);
+    for (int i = 1; i <= 4; i++)
+    {
+        if (!walkingFrames[i - 1].loadFromFile("en_idle1" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading frame " << i << std::endl;
+        }
+    }
+
     std::vector<Texture> dashFrames(2);
     for (int i = 1; i <= 2; i++)
     {
@@ -189,6 +199,9 @@ void game()
 
     Player player(Vector2f(100.0f, 45.0f));
     player.setTexture(walkingFrames[0]);
+
+    Enemigo enemigo(Vector2f(20.00f, 38.00f));
+    enemigo.setTexture(idleEnemigo[0]);
     
     std::vector<Texture> escalandoFrames(1);
     if (!escalandoFrames[0].loadFromFile("escalando.png")) {
@@ -776,6 +789,7 @@ void game()
 
             escalera1.drawTo(window);
             wood.drawTo(window);
+            enemigo.drawTo(window);
             bad.draw(window);
             window.display();
         }
