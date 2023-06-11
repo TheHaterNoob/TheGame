@@ -96,15 +96,6 @@ void game()
         }
     }
 
-    std::vector<sf::Texture> cagachadoFrames(8);
-    for (int i = 1; i <= 8; i++)
-    {
-        if (!cagachadoFrames[i - 1].loadFromFile("2ataque_" + std::to_string(i) + ".png"))
-        {
-            std::cerr << "Error loading second attack frame " << i << std::endl;
-        }
-    }
-
 
     //LADDER
     sf::Texture woodTexture;
@@ -142,7 +133,7 @@ void game()
     std::vector<Texture> idleEnemigo(4);
     for (int i = 1; i <= 4; i++)
     {
-        if (!idleEnemigo[i - 1].loadFromFile("en_idle1" + std::to_string(i) + ".png"))
+        if (!idleEnemigo[i - 1].loadFromFile("en_idle" + std::to_string(i) + ".png"))
         {
             std::cerr << "Error loading frame " << i << std::endl;
         }
