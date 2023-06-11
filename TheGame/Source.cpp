@@ -82,6 +82,8 @@ sf::Vector2f normalize(const sf::Vector2f& vector)
 void game()
 {
 
+
+
     
     std::vector<sf::Texture> canonTextures(7);
     for (int i = 1; i <= 7; i++)
@@ -335,21 +337,17 @@ void game()
     platforms.push_back(wood);
     float dt = deltaTime.asSeconds();
 
+  
     // Update the attack cooldown timer
-   
 
 
-
-
- 
+    
 
 
     while (window.isOpen())
     {
-
-       
-
-
+        canon.update(dt);
+      
 
         isPerformingAction = false;
 
@@ -806,7 +804,10 @@ void game()
 
 
             
-            canon.update(dt);
+            
+           
+                
+
             
             window.clear(Color::Blue);
             window.setView(view);

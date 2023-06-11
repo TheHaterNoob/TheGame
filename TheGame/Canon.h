@@ -20,4 +20,6 @@ private:
     float m_frameTime;
     float m_timer;
     sf::Vector2f m_position;
+    sf::Time m_animationTimer;
+
 };
