@@ -61,6 +61,8 @@ bool isPerformingAction = false;
 
 int currentIdleFrame = 0;
 
+bool isWalkingCrouched = false;
+
 std::vector<Platform> platforms;
 sf::Vector2f normalize(const sf::Vector2f& vector)
 {
@@ -94,6 +96,14 @@ void game()
         }
     }
 
+    std::vector<sf::Texture> cagachadoFrames(8);
+    for (int i = 1; i <= 8; i++)
+    {
+        if (!cagachadoFrames[i - 1].loadFromFile("2ataque_" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading second attack frame " << i << std::endl;
+        }
+    }
 
 
     //LADDER
@@ -132,7 +142,7 @@ void game()
     std::vector<Texture> idleEnemigo(4);
     for (int i = 1; i <= 4; i++)
     {
-        if (!walkingFrames[i - 1].loadFromFile("en_idle1" + std::to_string(i) + ".png"))
+        if (!idleEnemigo[i - 1].loadFromFile("en_idle1" + std::to_string(i) + ".png"))
         {
             std::cerr << "Error loading frame " << i << std::endl;
         }
@@ -148,8 +158,8 @@ void game()
         }
     }
 
-    std::vector<sf::Texture> idleFrames(10);
-    for (int i = 1; i <= 10; i++)
+    std::vector<sf::Texture> idleFrames(9);
+    for (int i = 1; i <= 9; i++)
     {
         if (!idleFrames[i - 1].loadFromFile("idle" + std::to_string(i) + ".png"))
         {
@@ -429,6 +439,8 @@ void game()
             isRolling = true;
             currentRollFrame = 0;
             float rollFrameTime = FRAME_TIME * ROLL_FRAME_SPEED;
+
+
            
         }
 
@@ -504,6 +516,11 @@ void game()
                     isCrouching = true;
                     // Cambiar la textura del personaje al sprite de agacharse
                     player.setTexture(agacharseTexture);
+
+                    currentIdleFrame = 0;
+                    animationTimer.restart();
+
+                    isPerformingAction = true;
 
                 }
                 if (Keyboard::isKeyPressed(Keyboard::Right) && !Keyboard::isKeyPressed(Keyboard::Left)) {
@@ -664,6 +681,8 @@ void game()
 
             isPerformingAction = true;
         }
+
+
 
         if (isDashing) {
             
