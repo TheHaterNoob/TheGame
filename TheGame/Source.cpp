@@ -11,6 +11,7 @@
 #include "Enemigo.h"
 #include "Canon.h"
 
+
 const float GRAVITY = 0.5f;
 const float JUMP_HEIGHT = 2.0f;
 const float FRAME_TIME = 0.2f;
@@ -63,6 +64,9 @@ bool isPerformingAction = false;
 int currentIdleFrame = 0;
 
 bool isWalkingCrouched = false;
+
+
+
 
 std::vector<Platform> platforms;
 sf::Vector2f normalize(const sf::Vector2f& vector)
@@ -332,12 +336,18 @@ void game()
     float dt = deltaTime.asSeconds();
 
     // Update the attack cooldown timer
+   
+
+
+
+
+ 
+
 
     while (window.isOpen())
     {
 
-        
-        canon.update(dt);
+       
 
 
 
@@ -792,7 +802,11 @@ void game()
 
             
 
+           
 
+
+            
+            canon.update(dt);
             
             window.clear(Color::Blue);
             window.setView(view);

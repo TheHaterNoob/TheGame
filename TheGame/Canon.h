@@ -2,10 +2,16 @@
 #include <SFML/Graphics.hpp>
 
 class Canon {
+    int currentAnimationIndex;
+
+
+
 public:
     Canon(const std::vector<sf::Texture>& textures, const sf::Vector2f& position);
     void update(float deltaTime);
     void draw(sf::RenderWindow& window);
+
+    
 
 private:
     std::vector<sf::Texture> m_textures;
