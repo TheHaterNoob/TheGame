@@ -9,6 +9,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <cmath>
 #include "Enemigo.h"
+#include "Canon.h"
 
 const float GRAVITY = 0.5f;
 const float JUMP_HEIGHT = 2.0f;
@@ -78,6 +79,20 @@ void game()
 {
 
     
+    std::vector<sf::Texture> canonTextures(7);
+    for (int i = 1; i <= 7; i++)
+    {
+        if (!canonTextures[i - 1].loadFromFile("cañon" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading canon texture " << i << std::endl;
+        }
+    }
+    Canon canon(canonTextures, sf::Vector2f(1845, 447));
+
+
+
+
+
     //BASE DE ESCALERA
     sf::Texture escaleraTexture;
     if (!escaleraTexture.loadFromFile("escalera1.png"))
@@ -86,6 +101,9 @@ void game()
     }
 
     Platform escalera1(escaleraTexture, Vector2f(857, 430));
+
+
+
 
     std::vector<sf::Texture> attackFrames2(6);
     for (int i = 1; i <= 6; i++)
@@ -317,6 +335,11 @@ void game()
 
     while (window.isOpen())
     {
+
+        
+        canon.update(dt);
+
+
 
         isPerformingAction = false;
 
@@ -767,11 +790,17 @@ void game()
 
             view.setCenter(viewCenter);
 
+            
+
 
             
             window.clear(Color::Blue);
             window.setView(view);
             window.draw(fondoDuplicadoSprite);
+            canon.draw(window);
+
+
+
             
             window.draw(castle);
             window.draw(puerta);
