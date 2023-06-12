@@ -1,4 +1,5 @@
 #pragma once
+
 #include <SFML/Graphics.hpp>
 #include "menu.h"
 #include "Player.h"
@@ -10,7 +11,7 @@
 #include <cmath>
 #include "Enemigo.h"
 #include "Canon.h"
-#include "Segundo.h"
+
 
 const float GRAVITY = 0.5f;
 const float JUMP_HEIGHT = 2.0f;
@@ -20,8 +21,8 @@ bool una = true;
 float jump = 2.00f;
 bool isDashing = false;
 float dashTime = 0.0f;
-const float dashDuration = 0.3f; 
-const float dashDistance = 100.0f; 
+const float dashDuration = 0.3f;
+const float dashDistance = 100.0f;
 const float dashSpeed = dashDistance / dashDuration;
 float speed = 1.0f;
 bool onPlatform = false;
@@ -79,12 +80,9 @@ sf::Vector2f normalize(const sf::Vector2f& vector)
         return vector;
 }
 
-void game()
+void SegundoNivel()
 {
 
-
-
-    
     std::vector<sf::Texture> canonTextures(7);
     for (int i = 1; i <= 7; i++)
     {
@@ -169,7 +167,7 @@ void game()
         if (!dashFrames[i - 1].loadFromFile("dash" + std::to_string(i) + ".png"))
         {
             std::cerr << "Error loading frame " << i << std::endl;
-           
+
         }
     }
 
@@ -200,7 +198,7 @@ void game()
         }
     }
 
-    
+
 
     if (walkingFrames.empty())
     {
@@ -216,7 +214,7 @@ void game()
 
     AttackCube attack(Vector2f(20.00f, 38.00f));
     attack.setColor(sf::Color(0, 255, 0, 60));
-    
+
 
     Enemy bad(Vector2f(20.00f, 38.00f));
     bad.setColor(sf::Color(0, 0, 255, 60));
@@ -227,7 +225,7 @@ void game()
 
     Enemigo enemigo(Vector2f(20.00f, 38.00f));
     enemigo.setTexture(idleEnemigo[0]);
-    
+
     std::vector<Texture> escalandoFrames(1);
     if (!escalandoFrames[0].loadFromFile("escalando.png")) {
         std::cerr << "Error loading escalando frame" << std::endl;
@@ -290,7 +288,7 @@ void game()
     trampa3.setPosition(1495, 478);
 
     Texture castleTexture;
-    if (!castleTexture.loadFromFile("fondo.png"))
+    if (!castleTexture.loadFromFile("segundo.png"))
     {
         std::cerr << "Error loading castle texture" << std::endl;
     }
@@ -307,7 +305,7 @@ void game()
     platforms.push_back(Platform(platformTexture, Vector2f(596, 496)));
     platforms.push_back(Platform(platformTexture, Vector2f(683, 496)));
     platforms.push_back(Platform(platformTexture, Vector2f(770, 496)));
- 
+
     //PLATAFORMA AEREA
     platforms.push_back(Platform(platformTexture, Vector2f(857, 430)));
     platforms.push_back(Platform(platformTexture, Vector2f(944, 430)));
@@ -333,17 +331,17 @@ void game()
     platforms.push_back(wood);
     float dt = deltaTime.asSeconds();
 
-  
+
     // Update the attack cooldown timer
 
 
-    
+
 
 
     while (window.isOpen())
     {
         canon.update(dt);
-      
+
 
         isPerformingAction = false;
 
@@ -382,11 +380,11 @@ void game()
         }
         if (player.isFacingLeft)
         {
-            Vector2f vec(cube.getX()+16, cube.getY() + 14);
+            Vector2f vec(cube.getX() + 16, cube.getY() + 14);
             player.setPosition(vec);
         }
         else {
-            Vector2f vec(cube.getX()+4 , cube.getY() + 14);
+            Vector2f vec(cube.getX() + 4, cube.getY() + 14);
             player.setPosition(vec);
         }
         Event event;
@@ -405,7 +403,7 @@ void game()
         Vector2f veck;
 
 
-       for (const auto& platform : platforms) {
+        for (const auto& platform : platforms) {
             FloatRect platformBounds = platform.getGlobalBounds();
 
             if (cubeBounds.intersects(platformBounds)) {
@@ -436,12 +434,12 @@ void game()
 
         if (!onAnyPlatform) {
             velocity += GRAVITY;
-            Mvelocity += (GRAVITY-0.23f);
+            Mvelocity += (GRAVITY - 0.23f);
             cube.move(Vector2f(0, velocity));
-           bad.move(Vector2f(0, Mvelocity));
+            bad.move(Vector2f(0, Mvelocity));
         }
 
-        
+
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         {
@@ -459,7 +457,7 @@ void game()
             float rollFrameTime = FRAME_TIME * ROLL_FRAME_SPEED;
 
 
-           
+
         }
 
 
@@ -480,93 +478,93 @@ void game()
 
         if (!isDashing) {
             bool isAKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
-                if (isAKeyPressed && !wasAKeyPressed  && !isAttacking && !isAttacking2 && attackTimer <= 0.0f && canAttackA)
-                {
-                    isAttacking = true;
-                    attackTimer = attackCooldown;
-                    canAttackA = false;
-
-                   
-                }
-                wasAKeyPressed = isAKeyPressed;
-                if (!isAKeyPressed)
-                {
-                    canAttackA = true;
-
-                    
-                }
-                bool isSKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::S);
-                if (isSKeyPressed && !wasSKeyPressed && !isAttacking && !isAttacking2 && attackTimer <= 0.0f)
-                {
-                    isAttacking2 = true;
-                    attackTimer = attackCooldown;
-                    canAttackS = false;
-
-                    
-                }
-                
-                wasSKeyPressed = isSKeyPressed;
-                if (!isSKeyPressed)
-                {
-                    canAttackS = true;
-                   
-                }
-
-                if (Keyboard::isKeyPressed(Keyboard::Left) && !Keyboard::isKeyPressed(Keyboard::Right)) {
-
-                    player.setFacingLeft(true);
-                    cube.move(Vector2f(-speed, 0));
+            if (isAKeyPressed && !wasAKeyPressed && !isAttacking && !isAttacking2 && attackTimer <= 0.0f && canAttackA)
+            {
+                isAttacking = true;
+                attackTimer = attackCooldown;
+                canAttackA = false;
 
 
-                    if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
-                        currentWalkingFrame = (currentWalkingFrame + 1) % walkingFrames.size();
-                        player.setTexture(walkingFrames[currentWalkingFrame]);
-                        animationTimer.restart();
-                    }
-                    
-                }
+            }
+            wasAKeyPressed = isAKeyPressed;
+            if (!isAKeyPressed)
+            {
+                canAttackA = true;
 
 
+            }
+            bool isSKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::S);
+            if (isSKeyPressed && !wasSKeyPressed && !isAttacking && !isAttacking2 && attackTimer <= 0.0f)
+            {
+                isAttacking2 = true;
+                attackTimer = attackCooldown;
+                canAttackS = false;
 
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !isAttacking)
-                {
-                    isCrouching = true;
-                    // Cambiar la textura del personaje al sprite de agacharse
-                    player.setTexture(agacharseTexture);
+            }
 
-                    currentIdleFrame = 0;
+            wasSKeyPressed = isSKeyPressed;
+            if (!isSKeyPressed)
+            {
+                canAttackS = true;
+
+            }
+
+            if (Keyboard::isKeyPressed(Keyboard::Left) && !Keyboard::isKeyPressed(Keyboard::Right)) {
+
+                player.setFacingLeft(true);
+                cube.move(Vector2f(-speed, 0));
+
+
+                if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
+                    currentWalkingFrame = (currentWalkingFrame + 1) % walkingFrames.size();
+                    player.setTexture(walkingFrames[currentWalkingFrame]);
                     animationTimer.restart();
-
-                    isPerformingAction = true;
-
-                }
-                if (Keyboard::isKeyPressed(Keyboard::Right) && !Keyboard::isKeyPressed(Keyboard::Left)) {
-                    player.setFacingLeft(false);
-                    cube.move(Vector2f(speed, 0));
-                    if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
-                        currentWalkingFrame = (currentWalkingFrame + 1) % walkingFrames.size();
-                        player.setTexture(walkingFrames[currentWalkingFrame]);
-                        animationTimer.restart();
-                    }
-
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                    if (onPlatform) {
-                        if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-                            onPlatform = false;
-                        }
-                        velocity -= jump;
-                        jump = jump - 0.2f;
-                        if (jump < 0.0f) {
-                            jump = 0.0f;
-                            onPlatform = false;
-                        }
-                        cube.move(sf::Vector2f(0, velocity));
+            }
+
+
+
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !isAttacking)
+            {
+                isCrouching = true;
+                // Cambiar la textura del personaje al sprite de agacharse
+                player.setTexture(agacharseTexture);
+
+                currentIdleFrame = 0;
+                animationTimer.restart();
+
+                isPerformingAction = true;
+
+            }
+            if (Keyboard::isKeyPressed(Keyboard::Right) && !Keyboard::isKeyPressed(Keyboard::Left)) {
+                player.setFacingLeft(false);
+                cube.move(Vector2f(speed, 0));
+                if (animationTimer.getElapsedTime().asSeconds() >= FRAME_TIME) {
+                    currentWalkingFrame = (currentWalkingFrame + 1) % walkingFrames.size();
+                    player.setTexture(walkingFrames[currentWalkingFrame]);
+                    animationTimer.restart();
+                }
+
+            }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                if (onPlatform) {
+                    if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                        onPlatform = false;
                     }
+                    velocity -= jump;
+                    jump = jump - 0.2f;
+                    if (jump < 0.0f) {
+                        jump = 0.0f;
+                        onPlatform = false;
+                    }
+                    cube.move(sf::Vector2f(0, velocity));
                 }
             }
+        }
 
 
         sf::Time deltaTime = clock1.restart();
@@ -703,9 +701,9 @@ void game()
 
 
         if (isDashing) {
-            
+
             dashTime += deltaTime.asSeconds();
-            
+
             if (dashTime <= dashDuration) {
                 // Calculate the distance to move based on the elapsed time
                 float distance = dashSpeed * deltaTime.asSeconds();
@@ -725,8 +723,8 @@ void game()
                 isDashing = false;
                 player.setTexture(walkingFrames[currentWalkingFrame]);
             }
-            
-            
+
+
         }
 
         if (isPushing)
@@ -771,235 +769,77 @@ void game()
             }
         }
 
-            view.setCenter(cube.getX(), view.getCenter().y);
-            if (una)
-            {
-                view.setCenter(cube.getX(), cube.getY() );
-                una = false;
-            }
-
-            // Después de actualizar la posición del personaje principal:
-            sf::Vector2f viewCenter = view.getCenter();
-
-            // Asegurarse de que la vista no se salga de los límites del fondo
-            if (viewCenter.x < backgroundLimitTopLeft.x)
-                viewCenter.x = backgroundLimitTopLeft.x;
-            else if (viewCenter.x > backgroundLimitBottomRight.x)
-                viewCenter.x = backgroundLimitBottomRight.x;
-
-            if (viewCenter.y < backgroundLimitTopLeft.y)
-                viewCenter.y = backgroundLimitTopLeft.y;
-            else if (viewCenter.y > backgroundLimitBottomRight.y)
-                viewCenter.y = backgroundLimitBottomRight.y;
-
-            view.setCenter(viewCenter);
-
-            
-
-           
-
-
-            
-            
-           
-                
-
-            
-            window.clear(Color::Blue);
-            window.setView(view);
-            window.draw(fondoDuplicadoSprite);
-            canon.draw(window);
-
-
-
-            
-            window.draw(castle);
-            window.draw(puerta);
-            window.draw(signo);
-            window.draw(lampara);
-            window.draw(lampara2);
-            window.draw(lampara3);
-            window.draw(lampara4);
-            window.draw(trampa);
-            window.draw(trampa2);
-            window.draw(trampa3);
-
-
-            
-            for (const auto& platform : platforms) {
-                platform.drawTo(window);
-            }
-            
-            player.drawTo(window);
-            cube.draw(window);
-            attack.draw(window);
-            
-
-
-
-            escalera1.drawTo(window);
-            wood.drawTo(window);
-            enemigo.drawTo(window);
-            bad.draw(window);
-            window.display();
-        }
-    }
-
-
-menu::menu(int width, int height)
-{
-    font.loadFromFile("fuente3.ttf");
-
-    mainmenu[0].setFont(font);
-    mainmenu[0].setFillColor(Color::White);
-    mainmenu[0].setString("Primer Nivel");
-    mainmenu[0].setCharacterSize(120);
-    mainmenu[0].setPosition(Vector2f(400, height / 4));
-
-
-    mainmenu[1].setFont(font);
-    mainmenu[1].setFillColor(Color::Red);
-    mainmenu[1].setString("Segundo Nivel");
-    mainmenu[1].setCharacterSize(120);
-    mainmenu[1].setPosition(Vector2f(400, height / 4 + 200));
-
-    mainmenu[2].setFont(font);
-    mainmenu[2].setFillColor(Color::Red);
-    mainmenu[2].setString("Exit");
-    mainmenu[2].setCharacterSize(120);
-    mainmenu[2].setPosition(Vector2f(400, height / 4 + 400));
-
-    
-
-    selected = 0;
-}
-
-menu::~menu() {}
-
-void menu::setSelected(int n)
-{
-    selected = n;
-}
-
-void menu::draw(RenderWindow& window)
-{
-    for (int i = 0; i < 3; i++)
-    {
-        window.draw(mainmenu[i]);
-    }
-}
-
-void menu::MoveDown()
-{
-    if (selected + 1 <= 3)
-    {
-        mainmenu[selected].setFillColor(Color::Red);
-        selected++;
-        if (selected == 3)
+        view.setCenter(cube.getX(), view.getCenter().y);
+        if (una)
         {
-            selected = 0;
+            view.setCenter(cube.getX(), cube.getY());
+            una = false;
         }
-        mainmenu[selected].setFillColor(Color::White);
+
+        // Después de actualizar la posición del personaje principal:
+        sf::Vector2f viewCenter = view.getCenter();
+
+        // Asegurarse de que la vista no se salga de los límites del fondo
+        if (viewCenter.x < backgroundLimitTopLeft.x)
+            viewCenter.x = backgroundLimitTopLeft.x;
+        else if (viewCenter.x > backgroundLimitBottomRight.x)
+            viewCenter.x = backgroundLimitBottomRight.x;
+
+        if (viewCenter.y < backgroundLimitTopLeft.y)
+            viewCenter.y = backgroundLimitTopLeft.y;
+        else if (viewCenter.y > backgroundLimitBottomRight.y)
+            viewCenter.y = backgroundLimitBottomRight.y;
+
+        view.setCenter(viewCenter);
+
+
+
+
+
+
+
+
+
+
+
+
+        window.clear(Color::Blue);
+        window.setView(view);
+        window.draw(fondoDuplicadoSprite);
+        canon.draw(window);
+
+
+
+
+        window.draw(castle);
+        window.draw(puerta);
+        window.draw(signo);
+        window.draw(lampara);
+        window.draw(lampara2);
+        window.draw(lampara3);
+        window.draw(lampara4);
+        window.draw(trampa);
+        window.draw(trampa2);
+        window.draw(trampa3);
+
+
+
+        for (const auto& platform : platforms) {
+            platform.drawTo(window);
+        }
+
+        player.drawTo(window);
+        cube.draw(window);
+        attack.draw(window);
+
+
+
+
+        escalera1.drawTo(window);
+        wood.drawTo(window);
+        enemigo.drawTo(window);
+        bad.draw(window);
+        window.display();
     }
 }
 
-void menu::MoveUp()
-{
-    if (selected - 1 >= -1)
-    {
-        mainmenu[selected].setFillColor(Color::Red);
-        selected--;
-        if (selected == -1)
-        {
-            selected = 2;
-        }
-        mainmenu[selected].setFillColor(Color::White);
-    }
-}
-
-void menu1()
-{
-    RenderWindow window(VideoMode(1920, 1080), "Game");
-    menu menu(1920, 1080);
-    Texture mainmenubg;
-    mainmenubg.loadFromFile("hell.jpg");
-    Sprite bg;
-    bg.setTexture(mainmenubg);
-
-    while (true)
-    {
-        if (pagenum == 1000)
-        {
-            while (window.isOpen())
-            {
-                Event event;
-                while (window.pollEvent(event))
-                {
-                    if (event.type == Event::Closed)
-                    {
-                        window.close();
-                        break;
-                    }
-                    if (event.type == Event::KeyPressed)
-                    {
-                        if (event.key.code == Keyboard::Up)
-                        {
-                            menu.MoveUp();
-                        }
-                        if (event.key.code == Keyboard::Down)
-                        {
-                            menu.MoveDown();
-                        }
-                        if (event.key.code == Keyboard::Return)
-                        {
-                            if (menu.pressed() == 0)
-                            {
-                                pagenum = 0;
-                            }
-                            if (menu.pressed() == 1)
-                            {
-                                pagenum = 1;
-                            }
-                            if (menu.pressed() == 2)
-                            {
-                                pagenum = -1;
-                            }
-                        }
-                    }
-                }
-                window.clear();
-                if (pagenum != 1000)
-                {
-                    break;
-                }
-                window.draw(bg);
-                menu.draw(window);
-                window.display();
-            }
-            if (pagenum == -1)
-            {
-                window.close();
-                break;
-            }
-            if (pagenum == 0)
-            {
-                game();
-                window.close();
-                
-                break;
-            }
-            if (pagenum == 1)
-            {
-                SegundoNivel();
-                window.close();
-                break;
-            }
-        }
-    }
-}
-
-int main()
-{
-    menu1();
-    return 0;
-}
