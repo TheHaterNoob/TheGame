@@ -81,16 +81,7 @@ sf::Vector2f normalize(const sf::Vector2f& vector)
 }
 void secondLevel()
 {
-    std::vector<sf::Texture> canonTextures(7);
-    for (int i = 1; i <= 7; i++)
-    {
-        if (!canonTextures[i - 1].loadFromFile("cañon" + std::to_string(i) + ".png"))
-        {
-            std::cerr << "Error loading canon texture " << i << std::endl;
-        }
-    }
-    Canon canon(canonTextures, sf::Vector2f(1845, 447));
-
+   
     //BASE DE ESCALERA
     sf::Texture escaleraTexture;
     if (!escaleraTexture.loadFromFile("escalera1.png"))
@@ -276,7 +267,7 @@ void secondLevel()
     trampa3.setPosition(1495, 478);
 
     Texture castleTexture;
-    if (!castleTexture.loadFromFile("fondo.png"))
+    if (!castleTexture.loadFromFile("segundo.png"))
     {
         std::cerr << "Error loading castle texture" << std::endl;
     }
@@ -285,7 +276,8 @@ void secondLevel()
     castle.setPosition(435, 260);
 
     sf::Sprite fondoDuplicadoSprite(castleTexture);
-    fondoDuplicadoSprite.setPosition(1380, 260);
+
+    fondoDuplicadoSprite.setPosition(1250, 260);
 
 
 
@@ -321,7 +313,7 @@ void secondLevel()
 
     while (window.isOpen())
     {
-        canon.update(dt);
+       
 
 
         isPerformingAction = false;
@@ -776,7 +768,7 @@ void secondLevel()
         window.clear(Color::Blue);
         window.setView(view);
         window.draw(fondoDuplicadoSprite);
-        canon.draw(window);
+     
         window.draw(castle);
         window.draw(puerta);
         window.draw(signo);
