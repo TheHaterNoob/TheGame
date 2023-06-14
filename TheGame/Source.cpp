@@ -10,7 +10,7 @@
 #include <cmath>
 #include "Enemigo.h"
 #include "Canon.h"
-
+#include "TrampaWorm.h"
 
 const float GRAVITY = 0.5f;
 const float JUMP_HEIGHT = 2.0f;
@@ -80,16 +80,23 @@ sf::Vector2f normalize(const sf::Vector2f& vector)
 void secondLevel()
 {
    
-    //BASE DE ESCALERA
-    sf::Texture escaleraTexture;
-    if (!escaleraTexture.loadFromFile("escalera1.png"))
+   
+
+
+    std::vector<sf::Texture> wormFrames(11);
+    for (int i = 1; i <= 11; i++)
     {
-        std::cerr << "Error loading escalera1 texture" << std::endl;
+        if (!wormFrames[i - 1].loadFromFile("worm" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading second attack frame " << i << std::endl;
+        }
     }
 
-    Platform escalera1(escaleraTexture, Vector2f(857, 430));
-
-
+    TrampaWorm gusano1(wormFrames, sf::Vector2f(793, 467));
+    TrampaWorm gusano2(wormFrames, sf::Vector2f(864, 467));
+    TrampaWorm gusano3(wormFrames, sf::Vector2f(935, 467));
+    TrampaWorm gusano4(wormFrames, sf::Vector2f(1006, 467));
+ 
 
 
     std::vector<sf::Texture> attackFrames2(6);
@@ -209,7 +216,7 @@ void secondLevel()
     }
 
     Texture platformTexture;
-    if (!platformTexture.loadFromFile("suelo1.png"))
+    if (!platformTexture.loadFromFile("suelof.png"))
     {
         // Logic to handle the error when loading the platform texture
     }
@@ -274,44 +281,32 @@ void secondLevel()
     castle.setPosition(435, 260);
 
     sf::Sprite fondoDuplicadoSprite(castleTexture);
-
     fondoDuplicadoSprite.setPosition(1250, 260);
 
 
-
     platforms.push_back(Platform(platformTexture, Vector2f(509, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(596, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(683, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(770, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(580, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(651, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(722, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(793, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(864, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(935, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1006, 496)));
 
-    //PLATAFORMA AEREA
-    platforms.push_back(Platform(platformTexture, Vector2f(857, 430)));
-    platforms.push_back(Platform(platformTexture, Vector2f(944, 430)));
-    platforms.push_back(Platform(platformTexture, Vector2f(1031, 430)));
-    platforms.push_back(Platform(platformTexture, Vector2f(1118, 430)));
-    platforms.push_back(Platform(platformTexture, Vector2f(1205, 430)));
-    platforms.push_back(Platform(platformTexture, Vector2f(1292, 430)));
-    platforms.push_back(Platform(platformTexture, Vector2f(1379, 430)));
 
-    platforms.push_back(Platform(platformTexture, Vector2f(1466, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(1553, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(1640, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(1727, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(1814, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(1901, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(1988, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(2075, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(2162, 496)));
-    platforms.push_back(Platform(platformTexture, Vector2f(2249, 496)));
 
     sf::Time deltaTime = clock1.restart();
-    platforms.push_back(escalera1);
-    platforms.push_back(wood);
+ 
     float dt = deltaTime.asSeconds();
 
     while (window.isOpen())
     {
        
+        gusano1.cargar(dt);
+        gusano2.cargar(dt);
+        gusano3.cargar(dt);
+        gusano4.cargar(dt);
+
 
 
         isPerformingAction = false;
@@ -769,15 +764,7 @@ void secondLevel()
      
         window.draw(castle);
      
-        window.draw(puerta);
-        window.draw(signo);
-        window.draw(lampara);
-        window.draw(lampara2);
-        window.draw(lampara3);
-        window.draw(lampara4);
-        window.draw(trampa);
-        window.draw(trampa2);
-        window.draw(trampa3);
+       
 
         for (const auto& platform : platforms) {
             platform.drawTo(window);
@@ -786,9 +773,11 @@ void secondLevel()
         player.drawTo(window);
         cube.draw(window);
         attack.draw(window);
-
-        escalera1.drawTo(window);
-        wood.drawTo(window);
+        gusano1.draw(window);
+        gusano2.draw(window);
+        gusano3.draw(window);
+        gusano4.draw(window);
+        
         enemigo.drawTo(window);
         bad.draw(window);
         window.display();

@@ -11,7 +11,6 @@ public:
     void update(float deltaTime);
     void draw(sf::RenderWindow& window);
 
-    
 
 private:
     std::vector<sf::Texture> m_textures;

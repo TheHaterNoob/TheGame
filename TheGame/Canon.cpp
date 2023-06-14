@@ -18,9 +18,6 @@ void Canon::update(float deltaTime)
     }
 }
 
-
-
-
 void Canon::draw(sf::RenderWindow& window)
 {
     window.draw(m_sprite);
