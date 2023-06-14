@@ -770,6 +770,7 @@ void secondLevel()
         window.draw(fondoDuplicadoSprite);
      
         window.draw(castle);
+     
         window.draw(puerta);
         window.draw(signo);
         window.draw(lampara);
