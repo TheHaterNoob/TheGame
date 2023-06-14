@@ -67,8 +67,6 @@ bool isWalkingCrouched = false;
     RenderWindow window(VideoMode(1366, 768), "THE GAME", Style::Fullscreen);
 
 
-
-
 std::vector<Platform> platforms;
 sf::Vector2f normalize(const sf::Vector2f& vector)
 {
