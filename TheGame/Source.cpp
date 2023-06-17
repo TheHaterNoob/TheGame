@@ -50,7 +50,6 @@ sf::Vector2f enemyPosition;
 sf::Vector2f pushDirection;
 bool canAttackA;
 bool wasAKeyPressed = false;
-
 bool canAttackS;
 bool wasSKeyPressed = false;
 
