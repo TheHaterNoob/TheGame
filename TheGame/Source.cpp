@@ -1483,23 +1483,21 @@ menu::menu(int width, int height)
     mainmenu[0].setFont(font);
     mainmenu[0].setFillColor(Color::White);
     mainmenu[0].setString("Primer Nivel");
-    mainmenu[0].setCharacterSize(120);
+    mainmenu[0].setCharacterSize(100);
     mainmenu[0].setPosition(Vector2f(400, height / 4));
 
 
     mainmenu[1].setFont(font);
     mainmenu[1].setFillColor(Color::Red);
     mainmenu[1].setString("Segundo Nivel");
-    mainmenu[1].setCharacterSize(120);
+    mainmenu[1].setCharacterSize(100);
     mainmenu[1].setPosition(Vector2f(400, height / 4 + 200));
 
     mainmenu[2].setFont(font);
     mainmenu[2].setFillColor(Color::Red);
     mainmenu[2].setString("Exit");
-    mainmenu[2].setCharacterSize(120);
+    mainmenu[2].setCharacterSize(100);
     mainmenu[2].setPosition(Vector2f(400, height / 4 + 400));
-
-    
 
     selected = 0;
 }
@@ -1550,7 +1548,7 @@ void menu::MoveUp()
 void menu1()
 {
 
-    menu menu(1920, 1080);
+    menu menu(1366, 768);
     Texture mainmenubg;
     mainmenubg.loadFromFile("hell.jpg");
     Sprite bg;
