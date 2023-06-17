@@ -9,12 +9,15 @@ Canon::Canon(const std::vector<sf::Texture>& textures, const sf::Vector2f& posit
 
 void Canon::update(float deltaTime)
 {
-    m_timer += deltaTime;
-    if (m_timer >= m_frameTime)
+    const float CanonCooldown = 25.0f;
+    static float CanonTimer = 0.0f; 
+
+    CanonTimer += deltaTime;  
+    if (CanonTimer >= CanonCooldown)
     {
         m_currentFrame = (m_currentFrame + 1) % m_textures.size();
         m_sprite.setTexture(m_textures[m_currentFrame]);
-        m_timer = 0.0f;
+        CanonTimer = 0.0f;  
     }
 }
 

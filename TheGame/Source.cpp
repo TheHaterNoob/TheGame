@@ -30,7 +30,7 @@ float Mvelocity = 0.0f;
 sf::Clock clock1;
 bool isAttacking2 = false;
 const float ROLL_FRAME_SPEED = 2.0f;
-const float ROLL_DISTANCE = 2.0f;
+const float ROLL_DISTANCE = 1.0f;
 
 bool isAttacking = false;
 bool isCrouching = false;
@@ -294,6 +294,7 @@ void secondLevel()
 
 
 
+
     sf::Time deltaTime = clock1.restart();
  
     float dt = deltaTime.asSeconds();
@@ -415,17 +416,6 @@ void secondLevel()
             }
         }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) && !isAttacking && !isCrouching && !isDashing)
-        {
-            isRolling = true;
-            currentRollFrame = 0;
-            float rollFrameTime = FRAME_TIME * ROLL_FRAME_SPEED;
-
-
-
-        }
-
-
         if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || !cubeBounds.intersects(wood.getGlobalBounds()))
         {
             isClimbing = false;
@@ -528,6 +518,15 @@ void secondLevel()
                     }
                     cube.move(sf::Vector2f(0, velocity));
                 }
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) && !isAttacking && !isCrouching && !isDashing)
+            {
+                isRolling = true;
+                currentRollFrame = 0;
+                float rollFrameTime = FRAME_TIME * ROLL_FRAME_SPEED;
+
+
+
             }
         }
 
@@ -785,7 +784,6 @@ void secondLevel()
 
 void game()
 {
-
     std::vector<sf::Texture> canonTextures(7);
     for (int i = 1; i <= 7; i++)
     {
@@ -795,19 +793,13 @@ void game()
         }
     }
     Canon canon(canonTextures, sf::Vector2f(1845, 447));
-
     //BASE DE ESCALERA
     sf::Texture escaleraTexture;
     if (!escaleraTexture.loadFromFile("escalera1.png"))
     {
         std::cerr << "Error loading escalera1 texture" << std::endl;
     }
-
     Platform escalera1(escaleraTexture, Vector2f(857, 430));
-
-
-
-
     std::vector<sf::Texture> attackFrames2(6);
     for (int i = 1; i <= 6; i++)
     {
@@ -817,8 +809,6 @@ void game()
         }
     }
 
-
-    //LADDER
     sf::Texture woodTexture;
     if (!woodTexture.loadFromFile("escalar.png"))
     {
@@ -826,7 +816,6 @@ void game()
     }
 
     Platform wood(woodTexture, Vector2f(855, 430));
-
     View view(Vector2f(0.0f, 0.0f), Vector2f(400.0f, 200.0f));
 
     sf::Texture agacharseTexture;
@@ -834,7 +823,6 @@ void game()
     {
         std::cerr << "Error loading agacharse texture" << std::endl;
     }
-
     std::vector<Texture> walkingFrames(4);
     for (int i = 1; i <= 4; i++)
     {
@@ -843,7 +831,6 @@ void game()
             std::cerr << "Error loading frame " << i << std::endl;
         }
     }
-
     std::vector<Texture> idleEnemigo(4);
     for (int i = 1; i <= 4; i++)
     {
@@ -852,7 +839,6 @@ void game()
             std::cerr << "Error loading frame " << i << std::endl;
         }
     }
-
     std::vector<Texture> dashFrames(2);
     for (int i = 1; i <= 2; i++)
     {
@@ -890,8 +876,6 @@ void game()
         }
     }
 
-    
-
     if (walkingFrames.empty())
     {
         // Logic to handle the case when no frames are loaded
@@ -909,18 +893,19 @@ void game()
     attack.setColor(sf::Color(0, 255, 0, 60));
     
 
-    Enemy bad(Vector2f(20.00f, 38.00f));
+    Enemy bad(Vector2f(32.00f, 40.00f));
     bad.setColor(sf::Color(0, 0, 255, 60));
     bad.setPosition(Vector2f(700, 420));
 
     Player player(Vector2f(100.0f, 45.0f));
     player.setTexture(walkingFrames[0]);
 
-    Enemigo enemigo(Vector2f(20.00f, 38.00f));
+    Enemigo enemigo(Vector2f(40.0f, 45.00f));
     enemigo.setTexture(idleEnemigo[0]);
     
     std::vector<Texture> escalandoFrames(1);
-    if (!escalandoFrames[0].loadFromFile("escalando.png")) {
+    if (!escalandoFrames[0].loadFromFile("escalando.png"))
+    {
         std::cerr << "Error loading escalando frame" << std::endl;
     }
 
@@ -930,7 +915,6 @@ void game()
         // Logic to handle the error when loading the platform texture
     }
     Platform platform(platformTexture, Vector2f(683, 484));
-
 
     Texture puertaTexture;
     if (!puertaTexture.loadFromFile("puerta.png"))
@@ -947,7 +931,6 @@ void game()
     }
     Sprite signo(signoTexture);
     signo.setPosition(570, 465);
-
 
     Texture lamparaTexture;
     if (!lamparaTexture.loadFromFile("lampara.png"))
@@ -992,8 +975,6 @@ void game()
     sf::Sprite fondoDuplicadoSprite(castleTexture);
     fondoDuplicadoSprite.setPosition(1380, 260);
 
-
-
     platforms.push_back(Platform(platformTexture, Vector2f(509, 496)));
     platforms.push_back(Platform(platformTexture, Vector2f(596, 496)));
     platforms.push_back(Platform(platformTexture, Vector2f(683, 496)));
@@ -1019,25 +1000,17 @@ void game()
     platforms.push_back(Platform(platformTexture, Vector2f(2162, 496)));
     platforms.push_back(Platform(platformTexture, Vector2f(2249, 496)));
 
+
     sf::Time deltaTime = clock1.restart();
     platforms.push_back(escalera1);
     platforms.push_back(wood);
     float dt = deltaTime.asSeconds();
 
-  
-    // Update the attack cooldown timer
-
-
-    
-
-
     while (window.isOpen())
     {
         canon.update(dt);
-      
 
         isPerformingAction = false;
-
 
         if (attackTimer > 0.0f)
         {
@@ -1045,8 +1018,6 @@ void game()
         }
         int escalandoFrame = 0;
         float climbSpeed = -1.0f;
-
-
 
         if (isClimbing) {
             if (escalandoFrame < escalandoFrames.size()) {
@@ -1067,7 +1038,6 @@ void game()
             cube.move(sf::Vector2f(0, -distance)); // Mueve al personaje hacia arriba
         }
 
-
         if (isClimbing) {
             player.setTexture(escalandoFrames[0]);
         }
@@ -1080,6 +1050,10 @@ void game()
             Vector2f vec(cube.getX()+4 , cube.getY() + 14);
             player.setPosition(vec);
         }
+
+        Vector2f vecbad(bad.getX()+23 , bad.getY()+16 );
+        enemigo.setPosition(vecbad);
+
         Event event;
         while (window.pollEvent(event))
         {
@@ -1092,9 +1066,7 @@ void game()
         FloatRect cubeBounds = cube.getGlobalBounds();
         FloatRect malitoBounds = bad.getGlobalBounds();
         bool onAnyPlatform = false;
-
         Vector2f veck;
-
 
        for (const auto& platform : platforms) {
             FloatRect platformBounds = platform.getGlobalBounds();
@@ -1132,8 +1104,6 @@ void game()
            bad.move(Vector2f(0, Mvelocity));
         }
 
-        
-
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         {
             if (cubeBounds.intersects(wood.getGlobalBounds()))
@@ -1142,18 +1112,6 @@ void game()
                 cube.move(sf::Vector2f(0, -speed)); // Mueve al personaje hacia arriba
             }
         }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) && !isAttacking && !isCrouching && !isDashing)
-        {
-            isRolling = true;
-            currentRollFrame = 0;
-            float rollFrameTime = FRAME_TIME * ROLL_FRAME_SPEED;
-
-
-           
-        }
-
-
         if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || !cubeBounds.intersects(wood.getGlobalBounds()))
         {
             isClimbing = false;
@@ -1169,7 +1127,7 @@ void game()
             }
         }
 
-        if (!isDashing) {
+        if (!isDashing && !isRolling) {
             bool isAKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
                 if (isAKeyPressed && !wasAKeyPressed  && !isAttacking && !isAttacking2 && attackTimer <= 0.0f && canAttackA)
                 {
@@ -1177,14 +1135,12 @@ void game()
                     attackTimer = attackCooldown;
                     canAttackA = false;
 
-                   
                 }
                 wasAKeyPressed = isAKeyPressed;
                 if (!isAKeyPressed)
                 {
                     canAttackA = true;
 
-                    
                 }
                 bool isSKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::S);
                 if (isSKeyPressed && !wasSKeyPressed && !isAttacking && !isAttacking2 && attackTimer <= 0.0f)
@@ -1193,7 +1149,6 @@ void game()
                     attackTimer = attackCooldown;
                     canAttackS = false;
 
-                    
                 }
                 
                 wasSKeyPressed = isSKeyPressed;
@@ -1202,7 +1157,6 @@ void game()
                     canAttackS = true;
                    
                 }
-
                 if (Keyboard::isKeyPressed(Keyboard::Left) && !Keyboard::isKeyPressed(Keyboard::Right)) {
 
                     player.setFacingLeft(true);
@@ -1216,9 +1170,6 @@ void game()
                     }
                     
                 }
-
-
-
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !isAttacking)
                 {
@@ -1256,6 +1207,12 @@ void game()
                         }
                         cube.move(sf::Vector2f(0, velocity));
                     }
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) && !isAttacking && !isCrouching && !isDashing)
+                {
+                    isRolling = true;
+                    currentRollFrame = 0;
+                    float rollFrameTime = FRAME_TIME * ROLL_FRAME_SPEED;
                 }
             }
 
@@ -1485,7 +1442,7 @@ void game()
 
             view.setCenter(viewCenter);
             
-            window.clear(Color::Blue);
+            window.clear();
             window.setView(view);
             window.draw(fondoDuplicadoSprite);
             canon.draw(window);
@@ -1515,6 +1472,7 @@ void game()
             window.display();
         }
     }
+    
 
 
 menu::menu(int width, int height)
@@ -1524,23 +1482,21 @@ menu::menu(int width, int height)
     mainmenu[0].setFont(font);
     mainmenu[0].setFillColor(Color::White);
     mainmenu[0].setString("Primer Nivel");
-    mainmenu[0].setCharacterSize(120);
+    mainmenu[0].setCharacterSize(100);
     mainmenu[0].setPosition(Vector2f(400, height / 4));
 
 
     mainmenu[1].setFont(font);
     mainmenu[1].setFillColor(Color::Red);
     mainmenu[1].setString("Segundo Nivel");
-    mainmenu[1].setCharacterSize(120);
+    mainmenu[1].setCharacterSize(100);
     mainmenu[1].setPosition(Vector2f(400, height / 4 + 200));
 
     mainmenu[2].setFont(font);
     mainmenu[2].setFillColor(Color::Red);
     mainmenu[2].setString("Exit");
-    mainmenu[2].setCharacterSize(120);
+    mainmenu[2].setCharacterSize(100);
     mainmenu[2].setPosition(Vector2f(400, height / 4 + 400));
-
-    
 
     selected = 0;
 }
@@ -1591,7 +1547,7 @@ void menu::MoveUp()
 void menu1()
 {
 
-    menu menu(1920, 1080);
+    menu menu(1366, 768);
     Texture mainmenubg;
     mainmenubg.loadFromFile("hell.jpg");
     Sprite bg;
