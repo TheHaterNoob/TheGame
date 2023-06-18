@@ -42,6 +42,12 @@
     <ClCompile Include="TrampaWorm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TrampaTecho.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TrampaTecho.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="menu.h">

@@ -144,6 +144,8 @@
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="TrampaTecho.cpp" />
+    <ClCompile Include="TrampaTecho.h" />
     <ClCompile Include="TrampaWorm.cpp" />
   </ItemGroup>
   <ItemGroup>

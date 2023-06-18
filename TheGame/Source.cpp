@@ -11,6 +11,7 @@
 #include "Enemigo.h"
 #include "Canon.h"
 #include "TrampaWorm.h"
+#include "TrampaTecho.h"
 
 const float GRAVITY = 0.5f;
 const float JUMP_HEIGHT = 2.0f;
@@ -79,7 +80,17 @@ sf::Vector2f normalize(const sf::Vector2f& vector)
 void secondLevel()
 {
    
-   
+    std::vector<sf::Texture> techoFrames(14);
+    for (int i = 1; i <= 14; i++)
+    {
+        if (!techoFrames[i - 1].loadFromFile("techo" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading second attack frame " << i << std::endl;
+        }
+    }
+    TrampaTecho techo1(techoFrames, sf::Vector2f(1285, 340));
+    TrampaTecho techo2(techoFrames, sf::Vector2f(1385, 340));
+    TrampaTecho techo3(techoFrames, sf::Vector2f(1495, 340));
 
 
     std::vector<sf::Texture> wormFrames(11);
@@ -221,6 +232,13 @@ void secondLevel()
     }
     Platform platform(platformTexture, Vector2f(683, 484));
 
+    Texture platform2Texture;
+    if (!platform2Texture.loadFromFile("aereo.png"))
+    {
+        std::cerr << "Error loading aereo" << std::endl;
+
+    }
+    Platform platform2(platform2Texture, Vector2f(1100, 520));
 
     Texture puertaTexture;
     if (!puertaTexture.loadFromFile("puerta.png"))
@@ -283,6 +301,7 @@ void secondLevel()
     fondoDuplicadoSprite.setPosition(1250, 260);
 
 
+    //PLATAFORMAS LARGAS
     platforms.push_back(Platform(platformTexture, Vector2f(509, 496)));
     platforms.push_back(Platform(platformTexture, Vector2f(580, 496)));
     platforms.push_back(Platform(platformTexture, Vector2f(651, 496)));
@@ -292,6 +311,23 @@ void secondLevel()
     platforms.push_back(Platform(platformTexture, Vector2f(935, 496)));
     platforms.push_back(Platform(platformTexture, Vector2f(1006, 496)));
 
+
+    //UNI PLATAFORMAS
+    platforms.push_back(Platform(platform2Texture, Vector2f(1100, 460)));
+    platforms.push_back(Platform(platform2Texture, Vector2f(1150, 440)));
+    platforms.push_back(Platform(platform2Texture, Vector2f(1200, 420)));
+    platforms.push_back(Platform(platform2Texture, Vector2f(1250, 400)));
+
+    //OTRAS UNI PLATAFORMAS
+    platforms.push_back(Platform(platform2Texture, Vector2f(1303, 316)));
+    platforms.push_back(Platform(platform2Texture, Vector2f(1403, 316)));
+    platforms.push_back(Platform(platform2Texture, Vector2f(1513, 316)));
+
+    //OTRAS PLATAFORMAS LARGAS
+    platforms.push_back(Platform(platformTexture, Vector2f(1273, 399)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1344, 399)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1415, 399)));
+    platforms.push_back(Platform(platformTexture, Vector2f(1486, 399)));
 
 
 
@@ -307,6 +343,9 @@ void secondLevel()
         gusano3.cargar(dt);
         gusano4.cargar(dt);
 
+        techo1.cargar(dt);
+        techo2.cargar(dt);
+        techo3.cargar(dt);
 
 
         isPerformingAction = false;
@@ -405,31 +444,7 @@ void secondLevel()
             bad.move(Vector2f(0, Mvelocity));
         }
 
-
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-        {
-            if (cubeBounds.intersects(wood.getGlobalBounds()))
-            {
-                isClimbing = true;
-                cube.move(sf::Vector2f(0, -speed)); // Mueve al personaje hacia arriba
-            }
-        }
-
-        if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || !cubeBounds.intersects(wood.getGlobalBounds()))
-        {
-            isClimbing = false;
-        }
-
-
-        if (cubeBounds.intersects(wood.getGlobalBounds())) {
-            if (player.isFacingLeft) {
-                cube.move(Vector2f(speed, 0)); // Revertir el movimiento hacia la izquierda
-            }
-            else {
-                cube.move(Vector2f(-speed, 0)); // Revertir el movimiento hacia la derecha
-            }
-        }
+       
 
         if (!isDashing) {
             bool isAKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
@@ -768,9 +783,18 @@ void secondLevel()
             platform.drawTo(window);
         }
 
+        for (const auto& platform2 : platforms) {
+            platform2.drawTo(window);
+        }
+
+
         player.drawTo(window);
         cube.draw(window);
         attack.draw(window);
+        techo1.draw(window);
+        techo2.draw(window);
+        techo3.draw(window);
+
         gusano1.draw(window);
         gusano2.draw(window);
         gusano3.draw(window);
@@ -781,6 +805,10 @@ void secondLevel()
         window.display();
     }
 }
+
+bool movingLeft = true;  
+float ballSpeed = 5.0f;
+
 
 void game()
 {
@@ -793,6 +821,7 @@ void game()
         }
     }
     Canon canon(canonTextures, sf::Vector2f(1845, 447));
+
     //BASE DE ESCALERA
     sf::Texture escaleraTexture;
     if (!escaleraTexture.loadFromFile("escalera1.png"))
@@ -800,6 +829,23 @@ void game()
         std::cerr << "Error loading escalera1 texture" << std::endl;
     }
     Platform escalera1(escaleraTexture, Vector2f(857, 430));
+
+
+
+    sf::Vector2f initialBallPosition(1867, 465);
+
+    sf::Texture bolaTexture;
+    if (!bolaTexture.loadFromFile("bola.png"))
+    {
+        std::cerr << "Error loading bola texture" << std::endl;
+    }
+    
+    Sprite bola(bolaTexture);
+    bola.setPosition(initialBallPosition);
+
+
+
+
     std::vector<sf::Texture> attackFrames2(6);
     for (int i = 1; i <= 6; i++)
     {
@@ -1006,11 +1052,36 @@ void game()
     platforms.push_back(wood);
     float dt = deltaTime.asSeconds();
 
+
+
+
+
     while (window.isOpen())
     {
         canon.update(dt);
 
         isPerformingAction = false;
+
+
+        if (movingLeft)
+        {
+            bola.move(-ballSpeed, 0.0f);
+            if (bola.getPosition().x <= 1460.0f)  // Comprueba si la bola alcanzó la posición límite en el eje X
+            {
+                bola.setPosition(initialBallPosition);  // Establece la posición inicial de la bola nuevamente
+                movingLeft = false;  // Cambia la dirección de movimiento
+            }
+        }
+        else
+        {
+            bola.move(ballSpeed, 0.0f);
+            if (bola.getPosition().x + bola.getGlobalBounds().width >= window.getSize().x)
+            {
+                movingLeft = true;
+            }
+        }
+
+
 
         if (attackTimer > 0.0f)
         {
@@ -1448,6 +1519,7 @@ void game()
             canon.draw(window);
             window.draw(castle);
             window.draw(puerta);
+            window.draw(bola);
             window.draw(signo);
             window.draw(lampara);
             window.draw(lampara2);
@@ -1465,6 +1537,7 @@ void game()
             cube.draw(window);
             attack.draw(window);
   
+           
             escalera1.drawTo(window);
             wood.drawTo(window);
             enemigo.drawTo(window);

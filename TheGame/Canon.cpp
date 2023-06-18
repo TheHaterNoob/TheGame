@@ -9,7 +9,7 @@ Canon::Canon(const std::vector<sf::Texture>& textures, const sf::Vector2f& posit
 
 void Canon::update(float deltaTime)
 {
-    const float CanonCooldown = 25.0f;
+    const float CanonCooldown = 46.0f;
     static float CanonTimer = 0.0f; 
 
     CanonTimer += deltaTime;  
