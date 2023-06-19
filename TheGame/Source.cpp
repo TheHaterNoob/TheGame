@@ -13,6 +13,8 @@
 #include "TrampaWorm.h"
 #include "TrampaTecho.h"
 
+int deathFrameIndex = 0;
+bool isDead = false;
 const float GRAVITY = 0.5f;
 const float JUMP_HEIGHT = 2.0f;
 const float FRAME_TIME = 0.2f;
@@ -883,6 +885,7 @@ void game()
     std::vector<sf::Texture> deathFrames(9);
     for (int i = 1; i <= 9; i++)
     {
+        
         if (!deathFrames[i - 1].loadFromFile("morir" + std::to_string(i) + ".png"))
         {
             std::cerr << "Error loading death frame " << i << std::endl;
@@ -1107,7 +1110,7 @@ void game()
     float dt = deltaTime.asSeconds();
 
   
-    bool isDead = false;
+
 
     bool damageApplied = false;
     while (window.isOpen())
@@ -1121,25 +1124,30 @@ void game()
             isDead = true;
             // Reproducir animación de morirse
         }
-
         if (isDead)
         {
-            static int deathFrameIndex = 0;
             // Actualizar la animación cada cierto tiempo
             if (animationTimer.getElapsedTime().asSeconds() > 0.2f)
             {
                 player.setTexture(deathFrames[deathFrameIndex]);
-                deathFrameIndex++;
+                if (deathFrameIndex < deathFrames.size()-1)
+                {
+                    deathFrameIndex++;
+                    animationTimer.restart();
+                }
+
                 if (deathFrameIndex >= deathFrames.size())
                 {
                     // La animación de morirse ha terminado, puedes realizar acciones adicionales aquí
                     // por ejemplo, reiniciar el nivel o mostrar una pantalla de Game Over.
                     // También puedes establecer isDead en false para que la animación no se reproduzca continuamente.
                     isDead = false;
+                    player.setTexture(deathFrames[8]);
                 }
-                animationTimer.restart();
+                
             }
         }
+
 
 
         if (movingLeft)

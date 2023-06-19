@@ -16,15 +16,20 @@ public:
     }
 
     void receiveDamage(int damage) {
-        life -= damage;        
+        if (damage >= life) {
+            life = 0;
+        }
+        else {
+            life -= damage;
+        }
+
         std::cerr << life << std::endl;
 
         if (life <= 0) {
             std::cout << "MUERTO" << std::endl;
-            
         }
-
     }
+
 
     void drawTo(sf::RenderWindow& window) {
         window.draw(player);
