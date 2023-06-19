@@ -15,17 +15,13 @@ public:
         life = 100;
     }
 
-   
-  
-
     void receiveDamage(int damage) {
-        life -= damage;
+        life -= damage;        
+        std::cerr << life << std::endl;
 
-        
         if (life <= 0) {
-
-            printf("MUERTO\n");
-
+            std::cout << "MUERTO" << std::endl;
+            
         }
 
     }
@@ -93,8 +89,11 @@ public:
     }
 
     sf::FloatRect getGlobalBounds() {
-        return player.getGlobalBounds();
+        sf::FloatRect bounds = player.getGlobalBounds();
+        bounds.width -= 60;  
+        return bounds;
     }
+
 
     void setPosition(sf::Vector2f position) {
         player.setPosition(position);
@@ -124,4 +123,7 @@ private:
         }
     }
     sf::RectangleShape player;
+
+  
+
 };

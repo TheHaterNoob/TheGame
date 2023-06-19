@@ -191,7 +191,7 @@ void secondLevel()
         }
     }
 
-
+    
 
     if (walkingFrames.empty())
     {
@@ -220,8 +220,10 @@ void secondLevel()
     Enemigo enemigo(Vector2f(20.00f, 38.00f));
     enemigo.setTexture(idleEnemigo[0]);
 
-    std::vector<Texture> escalandoFrames(1);
-    if (!escalandoFrames[0].loadFromFile("escalando.png")) {
+    std::vector<Texture> escalandoFrames(1); // Inicializar el vector con un tamaño de 1
+    escalandoFrames[0].loadFromFile("escalando.png"); // Cargar la textura en el primer elemento
+    if (escalandoFrames[0].getSize() == sf::Vector2u(0, 0))
+    {
         std::cerr << "Error loading escalando frame" << std::endl;
     }
 
@@ -867,7 +869,6 @@ void game()
     Platform escalera1(escaleraTexture, Vector2f(857, 430));
 
 
-
     sf::Vector2f initialBallPosition(1867, 465);
 
     sf::Texture bolaTexture;
@@ -879,8 +880,14 @@ void game()
     Sprite bola(bolaTexture);
     bola.setPosition(initialBallPosition);
 
-
-
+    std::vector<sf::Texture> deathFrames(9);
+    for (int i = 1; i <= 9; i++)
+    {
+        if (!deathFrames[i - 1].loadFromFile("morir" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading death frame " << i << std::endl;
+        }
+    }
 
     std::vector<sf::Texture> attackFrames2(6);
     for (int i = 1; i <= 6; i++)
@@ -985,11 +992,13 @@ void game()
     Enemigo enemigo(Vector2f(40.0f, 45.00f));
     enemigo.setTexture(idleEnemigo[0]);
     
-    std::vector<Texture> escalandoFrames(1);
-    if (!escalandoFrames[0].loadFromFile("escalando.png"))
+    std::vector<Texture> escalandoFrames(1); // Inicializar el vector con un tamaño de 1
+    escalandoFrames[0].loadFromFile("escalando.png"); // Cargar la textura en el primer elemento
+    if (escalandoFrames[0].getSize() == sf::Vector2u(0, 0))
     {
         std::cerr << "Error loading escalando frame" << std::endl;
     }
+
 
     Texture platformTexture;
     if (!platformTexture.loadFromFile("suelo1.png"))
@@ -1051,6 +1060,15 @@ void game()
         std::cerr << "Error loading castle texture" << std::endl;
     }
 
+    sf::Texture golpeTexture;
+    if (!golpeTexture.loadFromFile("golpe.png"))
+    {
+        std::cerr << "Error loading golpe texture" << std::endl;
+    }
+
+    bool isGolpe = false;
+
+
     Sprite castle(castleTexture);
     castle.setPosition(435, 260);
 
@@ -1088,20 +1106,46 @@ void game()
     platforms.push_back(wood);
     float dt = deltaTime.asSeconds();
 
+  
+    bool isDead = false;
 
-
-
-
+    bool damageApplied = false;
     while (window.isOpen())
     {
         canon.update(dt);
 
         isPerformingAction = false;
 
+        if (player.life <= 0 && !isDead)
+        {
+            isDead = true;
+            // Reproducir animación de morirse
+        }
+
+        if (isDead)
+        {
+            static int deathFrameIndex = 0;
+            // Actualizar la animación cada cierto tiempo
+            if (animationTimer.getElapsedTime().asSeconds() > 0.2f)
+            {
+                player.setTexture(deathFrames[deathFrameIndex]);
+                deathFrameIndex++;
+                if (deathFrameIndex >= deathFrames.size())
+                {
+                    // La animación de morirse ha terminado, puedes realizar acciones adicionales aquí
+                    // por ejemplo, reiniciar el nivel o mostrar una pantalla de Game Over.
+                    // También puedes establecer isDead en false para que la animación no se reproduzca continuamente.
+                    isDead = false;
+                }
+                animationTimer.restart();
+            }
+        }
+
 
         if (movingLeft)
         {
             bola.move(-ballSpeed, 0.0f);
+
             if (bola.getPosition().x <= 1460.0f)  // Comprueba si la bola alcanzó la posición límite en el eje X
             {
                 bola.setPosition(initialBallPosition);  // Establece la posición inicial de la bola nuevamente
@@ -1117,20 +1161,34 @@ void game()
             }
         }
 
-        
+        if (player.life > 0) {
 
-        if (trampa.getGlobalBounds().intersects(player.getGlobalBounds()))
-        {
-            player.receiveDamage(50);
+            if (bola.getGlobalBounds().intersects(player.getGlobalBounds()))
+            {
+                if (!damageApplied)
+                {
+                    player.receiveDamage(50);
+                    damageApplied = true;
+                }
+
+                if (!isGolpe)
+                {
+                    player.setTexture(golpeTexture);
+                    isGolpe = true;
+                    //ESTE DE ACA HACE UN KNOCKBACK PERO LE HACE MÁS DAÑO DE LO QUE DEBERÍA.
+                    //cube.move(sf::Vector2f(-8, 0));               
+                }
+            }
+            else
+            {
+                damageApplied = false;
+                if (isGolpe)
+                {
+                    player.setTexture(idleFrames[0]);
+                    isGolpe = false;
+                }
+            }
         }
-
-        if (bola.getGlobalBounds().intersects(player.getGlobalBounds()))
-        {
-            player.receiveDamage(50);
-        }
-
-
-
 
         if (attackTimer > 0.0f)
         {
