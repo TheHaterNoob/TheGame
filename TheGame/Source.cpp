@@ -232,6 +232,14 @@ void secondLevel()
     }
     Platform platform(platformTexture, Vector2f(683, 484));
 
+    Texture flotanteTexture;
+    if (!flotanteTexture.loadFromFile("flotante.png"))
+    {
+        //error
+    }
+    Platform flotante(flotanteTexture, Vector2f(1500, 399));
+
+
     Texture platform2Texture;
     if (!platform2Texture.loadFromFile("aereo.png"))
     {
@@ -329,11 +337,19 @@ void secondLevel()
     platforms.push_back(Platform(platformTexture, Vector2f(1415, 399)));
     platforms.push_back(Platform(platformTexture, Vector2f(1486, 399)));
 
+    //PLATFORMAS FLOTANTES
+    platforms.push_back(Platform(flotanteTexture, Vector2f(1560, 399)));
+
 
 
     sf::Time deltaTime = clock1.restart();
  
     float dt = deltaTime.asSeconds();
+
+
+    bool moveRight = true;           // Variable para indicar si la plataforma se mueve hacia la derecha o izquierda
+    float platformSpeed = 50.0f;     // Velocidad de movimiento de la plataforma
+    sf::Vector2f targetPosition(1610, 399);
 
     while (window.isOpen())
     {
@@ -346,6 +362,24 @@ void secondLevel()
         techo1.cargar(dt);
         techo2.cargar(dt);
         techo3.cargar(dt);
+
+
+        if (moveRight) {
+            if (flotante.getPosition().x < targetPosition.x) {
+                flotante.move(sf::Vector2f(platformSpeed * dt, 0.0f));
+            }
+            else {
+                moveRight = false;  // Cambia la dirección del movimiento
+            }
+        }
+        else {
+            if (flotante.getPosition().x > 1570) {
+                flotante.move(sf::Vector2f(-platformSpeed * dt, 0.0f));
+            }
+            else {
+                moveRight = true;  // Cambia la dirección del movimiento
+            }
+        }
 
 
         isPerformingAction = false;
@@ -378,6 +412,8 @@ void secondLevel()
             float distance = climbSpeed * deltaTime.asSeconds();
             cube.move(sf::Vector2f(0, -distance)); // Mueve al personaje hacia arriba
         }
+
+
 
 
         if (isClimbing) {
@@ -1080,6 +1116,19 @@ void game()
                 movingLeft = true;
             }
         }
+
+        
+
+        if (trampa.getGlobalBounds().intersects(player.getGlobalBounds()))
+        {
+            player.receiveDamage(50);
+        }
+
+        if (bola.getGlobalBounds().intersects(player.getGlobalBounds()))
+        {
+            player.receiveDamage(50);
+        }
+
 
 
 

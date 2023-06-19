@@ -8,6 +8,7 @@ public:
     Platform(const sf::Texture& texture, const sf::Vector2f& position) {
         sprite.setTexture(texture);
         sprite.setPosition(position);
+       
     }
 
     sf::FloatRect getGlobalBounds() const {
@@ -20,6 +21,17 @@ public:
     sf::Vector2f getPosition() const {
         return sprite.getPosition();
     }
+
+    void move(sf::Vector2f distance) {
+        sprite.move(distance);
+    }
+
+    void setPosition(sf::Vector2f position) {
+        sprite.setPosition(position);
+    }
+
+    
+
 
 private:
     sf::Sprite sprite;

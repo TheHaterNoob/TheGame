@@ -2,19 +2,49 @@
 
 #include <iostream>
 #include <SFML\Graphics.hpp>
+#include <cstdlib>
 
 class Player {
 public:
     bool isFacingLeft;
+    int life;
     Player(sf::Vector2f size) {
         player.setSize(size);
         isFacingLeft = false;
         setOriginAndScale();
+        life = 100;
+    }
+
+   
+  
+
+    void receiveDamage(int damage) {
+        life -= damage;
+
+        
+        if (life <= 0) {
+
+            printf("MUERTO\n");
+
+        }
+
     }
 
     void drawTo(sf::RenderWindow& window) {
         window.draw(player);
+
+        
+        sf::RectangleShape lifeBar(sf::Vector2f(60, 2)); 
+        lifeBar.setPosition(player.getPosition().x - 27, player.getPosition().y - 30);
+
+
+
+        lifeBar.setFillColor(sf::Color::Red); 
+        lifeBar.setOutlineThickness(1);
+        lifeBar.setOutlineColor(sf::Color::Black); 
+        window.draw(lifeBar);
     }
+
 
     void move(sf::Vector2f distance) {
         player.move(distance);

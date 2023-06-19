@@ -48,6 +48,9 @@
     <ClCompile Include="TrampaTecho.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Flotante.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="menu.h">
@@ -75,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TrampaWorm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Flotante.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
