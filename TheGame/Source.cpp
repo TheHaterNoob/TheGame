@@ -1113,8 +1113,10 @@ void game()
 
 
     bool damageApplied = false;
+    bool enemy1onplatform = true;
     while (window.isOpen())
     {
+
         canon.update(dt);
 
         isPerformingAction = false;
@@ -1235,10 +1237,32 @@ void game()
         else {
             Vector2f vec(cube.getX()+4 , cube.getY() + 14);
             player.setPosition(vec);
-        }
+        }         
+            Vector2f calc = cube.getPosition();
+            Vector2f direction = calc - bad.getPosition();
+            float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+            direction /= length;
+            Vector2f enemyspeed = direction * 0.9f;
 
-        Vector2f vecbad(bad.getX()+23 , bad.getY()+16 );
-        enemigo.setPosition(vecbad);
+            Vector2f position = bad.getPosition();
+            if (direction.x > 0) {
+                enemigo.setFacingLeft(false);
+                Vector2f vecbad(bad.getX() + 23, bad.getY() + 16);
+                enemigo.setPosition(vecbad);
+
+            }
+            else {
+                enemigo.setFacingLeft(true);
+                Vector2f vecbad(bad.getX() + 10, bad.getY() + 16);
+                enemigo.setPosition(vecbad);
+
+            }
+
+            position += enemyspeed;
+            if (enemy1onplatform)
+           {
+                bad.setPosition(position);
+            }
 
         Event event;
         while (window.pollEvent(event))
@@ -1278,11 +1302,16 @@ void game()
                     Vector2f newPosition(bad.getX(), platform.getPosition().y - bad.getGlobalBounds().height);
                     bad.setPosition(newPosition);
                     Mvelocity = 0.0f;
-                    break; // Se encontró una plataforma, no es necesario seguir verificando las demás
+                    enemy1onplatform = true;
+                    break;
                 }
             }
-        }
 
+        }
+        if (Mvelocity>0.1f)
+        {
+            enemy1onplatform = false;
+        }
         if (!onAnyPlatform) {
             velocity += GRAVITY;
             Mvelocity += (GRAVITY-0.23f);
