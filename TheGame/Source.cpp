@@ -1106,7 +1106,6 @@ void game()
 
     sf::Time deltaTime = clock1.restart();
     platforms.push_back(escalera1);
-    platforms.push_back(wood);
     float dt = deltaTime.asSeconds();
 
   
@@ -1114,6 +1113,8 @@ void game()
 
     bool damageApplied = false;
     bool enemy1onplatform = true;
+    bool enemy1canmove = true;
+
     while (window.isOpen())
     {
 
@@ -1238,6 +1239,7 @@ void game()
             Vector2f vec(cube.getX()+4 , cube.getY() + 14);
             player.setPosition(vec);
         }         
+
             Vector2f calc = cube.getPosition();
             Vector2f direction = calc - bad.getPosition();
             float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
@@ -1249,9 +1251,13 @@ void game()
                 enemigo.setFacingLeft(false);
                 Vector2f vecbad(bad.getX() + 23, bad.getY() + 16);
                 enemigo.setPosition(vecbad);
-
+                if (bad.getGlobalBounds().intersects(wood.getGlobalBounds()))
+                {
+                    enemy1canmove = false;
+                }
             }
             else {
+                enemy1canmove = true;
                 enemigo.setFacingLeft(true);
                 Vector2f vecbad(bad.getX() + 10, bad.getY() + 16);
                 enemigo.setPosition(vecbad);
@@ -1259,7 +1265,7 @@ void game()
             }
 
             position += enemyspeed;
-            if (enemy1onplatform)
+            if (enemy1onplatform && enemy1canmove)
            {
                 bad.setPosition(position);
             }
@@ -1297,7 +1303,7 @@ void game()
         for (const auto& platform : platforms)
         {
             FloatRect platformBounds = platform.getGlobalBounds();
-            if (malitoBounds.intersects(platformBounds)) {
+            if (malitoBounds.intersects(platformBounds) ) {
                 if (Mvelocity > 0) {
                     Vector2f newPosition(bad.getX(), platform.getPosition().y - bad.getGlobalBounds().height);
                     bad.setPosition(newPosition);
