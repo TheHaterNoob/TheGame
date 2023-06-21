@@ -2,10 +2,14 @@
 #include <SFML/Graphics.hpp>
 class Enemy {
 public:
+
     Enemy(sf::Vector2f size) {
         shape.setSize(size);
         shape.setFillColor(sf::Color(0, 0, 255, 10));
+
+
     }
+
     sf::Vector2f velocity;
 
     void setPosition(sf::Vector2f position) {

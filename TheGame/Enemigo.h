@@ -5,10 +5,20 @@
 
 class Enemigo {
 public:
- 
+    bool isFacingLeft;
     Enemigo(sf::Vector2f size) {
         enemigo.setSize(size);
         setOriginAndScale();
+        isFacingLeft = true;
+    }
+    void setFacingLeft(bool facingLeft) {
+        isFacingLeft = facingLeft;
+        if (isFacingLeft) {
+            enemigo.setScale(-std::abs(enemigo.getScale().x), enemigo.getScale().y);
+        }
+        else {
+            enemigo.setScale(std::abs(enemigo.getScale().x), enemigo.getScale().y);
+        }
     }
 
     void drawTo(sf::RenderWindow& window) {
