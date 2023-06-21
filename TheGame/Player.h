@@ -11,16 +11,16 @@ public:
     sf::RectangleShape lifeBar;
 
 
+
     Player(sf::Vector2f size) {
         player.setSize(size);
         isFacingLeft = false;
         setOriginAndScale();
         life = 100;
 
-        lifeBar.setSize(sf::Vector2f(60, 2));
+        lifeBar.setSize(sf::Vector2f(87, 6));
         lifeBar.setFillColor(sf::Color::Red);
-        lifeBar.setOutlineThickness(1);
-        lifeBar.setOutlineColor(sf::Color::Black);
+        
     }
 
     void receiveDamage(int damage) {
@@ -37,18 +37,36 @@ public:
             std::cout << "MUERTO" << std::endl;
         }
 
-        float lifeBarWidth = static_cast<float>(life) / 100 * 60; 
-        lifeBar.setSize(sf::Vector2f(lifeBarWidth, 2));
+        float lifeBarWidth = static_cast<float>(life) / 100 * 87; 
+        lifeBar.setSize(sf::Vector2f(lifeBarWidth, 6));
     }
 
 
-    void drawTo(sf::RenderWindow& window) {
-        window.draw(player);
-        lifeBar.setPosition(player.getPosition().x - 27, player.getPosition().y - 30);
+    void drawTo(sf::RenderWindow& window, sf::View& camera) {
 
+        sf::Texture barraTexture;
+        if (!barraTexture.loadFromFile("barra124.png")) {
+            std::cerr << "Error loading barra texture" << std::endl;
+        }
+
+        sf::Sprite barraSprite(barraTexture);
+
+        sf::Vector2f cameraPosition = camera.getCenter();
+        sf::Vector2f cameraSize = camera.getSize();
+
+        float xPos = cameraPosition.x - (cameraSize.x / 2) + (cameraSize.x / 2) - 166;
+        float yPos = cameraPosition.y + (cameraSize.y / 2) - 184;
+
+        float xPos2 = cameraPosition.x - (cameraSize.x / 2) + (cameraSize.x / 2) - 197;
+        float yPos2 = cameraPosition.y + (cameraSize.y / 2) - 199;
+
+        lifeBar.setPosition(xPos, yPos);
+        barraSprite.setPosition(xPos2, yPos2);
+
+        window.draw(barraSprite);
+        window.draw(player);
         window.draw(lifeBar);
     }
-
 
     void move(sf::Vector2f distance) {
         player.move(distance);

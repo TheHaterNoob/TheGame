@@ -851,7 +851,7 @@ void secondLevel()
         enemigo.drawTo(window);
         bad.draw(window);
 
-        player.drawTo(window);
+        player.drawTo(window, view);
         window.display();
     }
 }
@@ -909,6 +909,9 @@ void game()
             std::cerr << "Error loading second attack frame " << i << std::endl;
         }
     }
+
+   
+   
 
     sf::Texture woodTexture;
     if (!woodTexture.loadFromFile("escalar.png"))
@@ -1691,12 +1694,14 @@ void game()
             window.draw(trampa);
             window.draw(trampa2);
             window.draw(trampa3);
+            
+
          
             for (const auto& platform : platforms) {
                 platform.drawTo(window);
             }
             
-            player.drawTo(window);
+            player.drawTo(window, view);
             cube.draw(window);
             attack.draw(window);
   
