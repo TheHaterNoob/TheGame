@@ -70,6 +70,7 @@ bool isWalkingCrouched = false;
 
 
 std::vector<Platform> platforms;
+
 sf::Vector2f normalize(const sf::Vector2f& vector)
 {
     float length = std::sqrt(vector.x * vector.x + vector.y * vector.y);
@@ -849,7 +850,6 @@ void secondLevel()
 bool movingLeft = true;  
 float ballSpeed = 5.0f;
 
-
 void game()
 {
     std::vector<sf::Texture> canonTextures(7);
@@ -1168,6 +1168,10 @@ void game()
                 movingLeft = true;
             }
         }
+
+
+
+
 
         if (player.life > 0) {
 

@@ -33,13 +33,8 @@ public:
 
     void drawTo(sf::RenderWindow& window) {
         window.draw(player);
-
-        
-        sf::RectangleShape lifeBar(sf::Vector2f(60, 2)); 
+        sf::RectangleShape lifeBar(sf::Vector2f(60, 2));
         lifeBar.setPosition(player.getPosition().x - 27, player.getPosition().y - 30);
-
-
-
         lifeBar.setFillColor(sf::Color::Red); 
         lifeBar.setOutlineThickness(1);
         lifeBar.setOutlineColor(sf::Color::Black); 

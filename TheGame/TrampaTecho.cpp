@@ -28,3 +28,5 @@ void TrampaTecho::draw(sf::RenderWindow& window)
 {
     window.draw(entitySprite);
 }
+
+

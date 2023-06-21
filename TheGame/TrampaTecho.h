@@ -9,6 +9,7 @@ public:
     void cargar(float deltaTime);
     void draw(sf::RenderWindow& window);
 
+
 private:
     std::vector<sf::Texture> textureList;
     sf::Sprite entitySprite;
