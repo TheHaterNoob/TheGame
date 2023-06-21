@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <SFML\Graphics.hpp>
+#include "Player.h"
 
 class Enemigo {
 public:

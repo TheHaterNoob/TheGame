@@ -8,11 +8,19 @@ class Player {
 public:
     bool isFacingLeft;
     int life;
+    sf::RectangleShape lifeBar;
+
+
     Player(sf::Vector2f size) {
         player.setSize(size);
         isFacingLeft = false;
         setOriginAndScale();
         life = 100;
+
+        lifeBar.setSize(sf::Vector2f(60, 2));
+        lifeBar.setFillColor(sf::Color::Red);
+        lifeBar.setOutlineThickness(1);
+        lifeBar.setOutlineColor(sf::Color::Black);
     }
 
     void receiveDamage(int damage) {
@@ -28,16 +36,16 @@ public:
         if (life <= 0) {
             std::cout << "MUERTO" << std::endl;
         }
+
+        float lifeBarWidth = static_cast<float>(life) / 100 * 60; 
+        lifeBar.setSize(sf::Vector2f(lifeBarWidth, 2));
     }
 
 
     void drawTo(sf::RenderWindow& window) {
         window.draw(player);
-        sf::RectangleShape lifeBar(sf::Vector2f(60, 2));
         lifeBar.setPosition(player.getPosition().x - 27, player.getPosition().y - 30);
-        lifeBar.setFillColor(sf::Color::Red); 
-        lifeBar.setOutlineThickness(1);
-        lifeBar.setOutlineColor(sf::Color::Black); 
+
         window.draw(lifeBar);
     }
 

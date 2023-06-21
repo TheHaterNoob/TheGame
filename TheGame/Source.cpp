@@ -45,9 +45,9 @@ int currentDashFrame = 0;
 bool isClimbing = false;
 const float attackCooldown = 10.0f;
 float attackTimer = 0.0f;
-float pushDuration = 0.5f;    // Duration of the push in seconds
-float pushTimer = 0.0f;       // Timer for push duration
-float pushForce = 0.69f;     // Force to push the enemy
+float pushDuration = 0.5f;    
+float pushTimer = 0.0f;       
+float pushForce = 0.69f;     
 bool isPushing = false;
 sf::Vector2f enemyPosition;
 sf::Vector2f pushDirection;
@@ -91,9 +91,7 @@ void secondLevel()
             std::cerr << "Error loading second attack frame " << i << std::endl;
         }
     }
-    TrampaTecho techo1(techoFrames, sf::Vector2f(1285, 340));
-    TrampaTecho techo2(techoFrames, sf::Vector2f(1385, 340));
-    TrampaTecho techo3(techoFrames, sf::Vector2f(1495, 340));
+    
 
 
     std::vector<sf::Texture> wormFrames(11);
@@ -105,10 +103,7 @@ void secondLevel()
         }
     }
 
-    TrampaWorm gusano1(wormFrames, sf::Vector2f(793, 467));
-    TrampaWorm gusano2(wormFrames, sf::Vector2f(864, 467));
-    TrampaWorm gusano3(wormFrames, sf::Vector2f(935, 467));
-    TrampaWorm gusano4(wormFrames, sf::Vector2f(1006, 467));
+   
  
 
 
@@ -222,6 +217,18 @@ void secondLevel()
 
     Enemigo enemigo(Vector2f(20.00f, 38.00f));
     enemigo.setTexture(idleEnemigo[0]);
+
+
+    TrampaTecho techo1(techoFrames, sf::Vector2f(1285, 340), player);
+    TrampaTecho techo2(techoFrames, sf::Vector2f(1385, 340), player);
+    TrampaTecho techo3(techoFrames, sf::Vector2f(1495, 340), player);
+
+     TrampaWorm gusano1(wormFrames, sf::Vector2f(793, 467), player);
+    TrampaWorm gusano2(wormFrames, sf::Vector2f(864, 467), player);
+    TrampaWorm gusano3(wormFrames, sf::Vector2f(935, 467), player);
+    TrampaWorm gusano4(wormFrames, sf::Vector2f(1006, 467), player);
+
+
 
     std::vector<Texture> escalandoFrames(1); // Inicializar el vector con un tamaño de 1
     escalandoFrames[0].loadFromFile("escalando.png"); // Cargar la textura en el primer elemento
@@ -829,7 +836,7 @@ void secondLevel()
         }
 
 
-        player.drawTo(window);
+        
         cube.draw(window);
         attack.draw(window);
         techo1.draw(window);
@@ -843,6 +850,8 @@ void secondLevel()
         
         enemigo.drawTo(window);
         bad.draw(window);
+
+        player.drawTo(window);
         window.display();
     }
 }
