@@ -45,7 +45,7 @@ public:
     void drawTo(sf::RenderWindow& window, sf::View& camera) {
 
         sf::Texture barraTexture;
-        if (!barraTexture.loadFromFile("barra124.png")) {
+        if (!barraTexture.loadFromFile("barranew.png")) {
             std::cerr << "Error loading barra texture" << std::endl;
         }
 

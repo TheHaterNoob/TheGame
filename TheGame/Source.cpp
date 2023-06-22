@@ -64,6 +64,7 @@ int currentRollFrame = 0;
 bool isPerformingAction = false;
 
 int currentIdleFrame = 0;
+bool isDead = false;
 
 bool isWalkingCrouched = false;
     RenderWindow window(VideoMode(1366, 768), "THE GAME", Style::Fullscreen);
@@ -1129,6 +1130,8 @@ void game()
 
     while (window.isOpen())
     {
+        
+
 
         canon.update(dt);
 
@@ -1710,6 +1713,10 @@ void game()
             wood.drawTo(window);
             enemigo.drawTo(window);
             bad.draw(window);
+
+            
+
+
             window.display();
         }
     }
