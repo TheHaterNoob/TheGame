@@ -76,6 +76,7 @@ int currentIdleFrame = 0;
 bool Mpressed = false;
 bool Vpressed = false;
 bool Cpressed = false;
+bool quedate = false;
 
 bool isWalkingCrouched = false;
     RenderWindow window(VideoMode(1366, 768), "THE GAME", Style::Fullscreen);
@@ -856,22 +857,55 @@ void secondLevel()
             una = false;
         }
 
-        // Después de actualizar la posición del personaje principal:
-        sf::Vector2f viewCenter = view.getCenter();
 
-        // Asegurarse de que la vista no se salga de los límites del fondo
-        if (viewCenter.x < backgroundLimitTopLeft.x)
-            viewCenter.x = backgroundLimitTopLeft.x;
-        else if (viewCenter.x > backgroundLimitBottomRight.x)
-            viewCenter.x = backgroundLimitBottomRight.x;
+        if (player.getX()<=1900&&!quedate)
+        {
+            sf::Vector2f viewCenter = view.getCenter();
 
-        if (viewCenter.y < backgroundLimitTopLeft.y)
-            viewCenter.y = backgroundLimitTopLeft.y;
-        else if (viewCenter.y > backgroundLimitBottomRight.y)
-            viewCenter.y = backgroundLimitBottomRight.y;
+            if (viewCenter.x < backgroundLimitTopLeft.x)
+                viewCenter.x = backgroundLimitTopLeft.x;
+            else if (viewCenter.x > backgroundLimitBottomRight.x)
+                viewCenter.x = backgroundLimitBottomRight.x;
 
-        view.setCenter(viewCenter);
+            if (viewCenter.y < backgroundLimitTopLeft.y)
+                viewCenter.y = backgroundLimitTopLeft.y;
+            else if (viewCenter.y > backgroundLimitBottomRight.y)
+                viewCenter.y = backgroundLimitBottomRight.y;
 
+            view.setCenter(viewCenter);
+        }
+        if (player.getX() >= 2130&&!quedate)
+        {
+            view.setCenter(2150, view.getCenter().y);
+            quedate = true;
+        }
+        Vector2f vectorleft(540, cube.getY());
+        if (cube.getX()<=540)
+        {
+            cube.setPosition(vectorleft);
+        }
+        if (quedate)
+        {
+            view.setCenter(2150, view.getCenter().y);
+            sf::Vector2f playerPosition = cube.getPosition();
+            sf::Vector2f viewSize = view.getSize();
+            sf::Vector2f viewCenter = view.getCenter();
+
+            float viewLeft = viewCenter.x - viewSize.x / 2.0f;
+            float viewRight = viewCenter.x + viewSize.x / 2.0f;
+
+
+            if (playerPosition.x < (viewLeft + 20))
+            {
+                playerPosition.x = (viewLeft + 20);
+            }
+            else if (playerPosition.x > (viewRight - 10))
+            {
+                playerPosition.x = (viewRight-10);
+            }
+
+            cube.setPosition(playerPosition);
+        }
         window.clear(Color::Blue);
         window.setView(view);
         window.draw(fondoDuplicadoSprite);
@@ -1029,6 +1063,9 @@ void secondLevel()
             fuego1.draw(window);
 
         }
+
+
+
         window.display();
     }
 }
@@ -1938,6 +1975,17 @@ void game()
                 viewCenter.y = backgroundLimitBottomRight.y;
 
             view.setCenter(viewCenter);
+            std::cerr << cube.getX() << std::endl;
+            Vector2f vectorleft(525, cube.getY());
+            Vector2f vectorright(2315, cube.getY());
+            if (cube.getX()<=525)
+            {
+                cube.setPosition(vectorleft);
+            }
+            if (cube.getX()>=2315)
+            {
+                cube.setPosition(vectorright);
+            }
             
             window.clear();
             window.setView(view);
