@@ -93,7 +93,7 @@ sf::Vector2f normalize(const sf::Vector2f& vector)
 }
 void secondLevel(sf::RenderWindow& window)
 {
-    window.clear();
+
     std::vector<Platform> platforms;
     std::vector<sf::Texture> techoFrames(14);
     for (int i = 1; i <= 14; i++)
@@ -262,7 +262,7 @@ void secondLevel(sf::RenderWindow& window)
     Texture platformTexture;
     if (!platformTexture.loadFromFile("suelof.png"))
     {
-        // Logic to handle the error when loading the platform texture
+        
     }
     Platform platform(platformTexture, Vector2f(683, 484));
 
@@ -412,8 +412,12 @@ void secondLevel(sf::RenderWindow& window)
 
     while (window.isOpen())
     {
-        window.clear();
-
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
 
         gusano1.cargar(dt);
         gusano2.cargar(dt);
@@ -492,14 +496,7 @@ void secondLevel(sf::RenderWindow& window)
             Vector2f vec(cube.getX() + 4, cube.getY() + 14);
             player.setPosition(vec);
         }
-        Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == Event::Closed)
-            {
-                window.close();
-            }
-        }
+
 
         FloatRect cubeBounds = cube.getGlobalBounds();
         FloatRect malitoBounds = bad.getGlobalBounds();
@@ -904,25 +901,15 @@ void secondLevel(sf::RenderWindow& window)
 
             cube.setPosition(playerPosition);
         }
-        window.clear();
+
+      
         window.clear(Color::Red);
+        window.setView(view);
+
 
         window.draw(fondoDuplicadoSprite);
-     
         window.draw(castle);
         window.draw(otrofondo);
-     
-       
-
-        for (const auto& platform : platforms) {
-            platform.drawTo(window);
-        }
-
-        for (const auto& platform2 : platforms) {
-            platform2.drawTo(window);
-        }
-
-        window.clear();
         cube.draw(window);
         attack.draw(window);
         techo1.draw(window);
@@ -933,12 +920,14 @@ void secondLevel(sf::RenderWindow& window)
         gusano2.draw(window);
         gusano3.draw(window);
         gusano4.draw(window);
-        
+        player.drawTo(window, view);
+
         enemigo.drawTo(window);
         bad.draw(window);
-
-
-
+        for (const auto& platform : platforms) {
+            platform.drawTo(window);
+        }
+        window.display();
         if (isOnFlotante) {
 
             sf::Texture mTexture;
@@ -1060,13 +1049,7 @@ void secondLevel(sf::RenderWindow& window)
             fuego1.draw(window);
 
         }
-        player.drawTo(window, view);
-        window.setView(view);
-
-        window.display();
-
     }
-
 }
 
 bool movingLeft = true;  
@@ -2022,6 +2005,7 @@ void game(sf::RenderWindow& window)
             for (const auto& platform : platforms) {
                 platform.drawTo(window);
             }
+
             
             player.drawTo(window, view);
             cube.draw(window);
