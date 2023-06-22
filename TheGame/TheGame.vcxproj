@@ -145,6 +145,7 @@
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="TrampaFuego.cpp" />
     <ClCompile Include="TrampaTecho.cpp" />
     <ClCompile Include="TrampaTecho.h" />
     <ClCompile Include="TrampaWorm.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="Platform.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="TrampaFuego.h" />
     <ClInclude Include="TrampaWorm.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

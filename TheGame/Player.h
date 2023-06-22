@@ -70,7 +70,7 @@ public:
         window.draw(player);
         window.draw(lifeBar);
 
-        if (tamuerto) {
+        /*if (tamuerto) {
 
            
 
@@ -88,6 +88,7 @@ public:
 
             window.draw(muertoSprite);
         }
+        */
 
     }
 

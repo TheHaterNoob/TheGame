@@ -12,6 +12,7 @@
 #include "Canon.h"
 #include "TrampaWorm.h"
 #include "TrampaTecho.h"
+#include "TrampaFuego.h"
 
 int deathFrameIndex = 0;
 bool isDead = false;
@@ -55,6 +56,9 @@ bool canAttackA;
 bool wasAKeyPressed = false;
 bool canAttackS;
 bool wasSKeyPressed = false;
+bool isOnFlotante = false;
+bool isOnFlotante2 = false;
+bool isOnFlotante3 = false;
 
 bool canDash;
 bool wasDashPressed = false;
@@ -64,7 +68,9 @@ int currentRollFrame = 0;
 bool isPerformingAction = false;
 
 int currentIdleFrame = 0;
-
+bool Mpressed = false;
+bool Vpressed = false;
+bool Cpressed = false;
 
 bool isWalkingCrouched = false;
     RenderWindow window(VideoMode(1366, 768), "THE GAME", Style::Fullscreen);
@@ -92,7 +98,15 @@ void secondLevel()
             std::cerr << "Error loading second attack frame " << i << std::endl;
         }
     }
-    
+
+    std::vector<sf::Texture> fuegoFrames(12);
+    for (int i = 1; i <= 12; i++)
+    {
+        if (!fuegoFrames[i - 1].loadFromFile("fuego" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading second fuego" << i << std::endl;
+        }
+    }
 
 
     std::vector<sf::Texture> wormFrames(11);
@@ -103,9 +117,6 @@ void secondLevel()
             std::cerr << "Error loading second attack frame " << i << std::endl;
         }
     }
-
-   
- 
 
 
     std::vector<sf::Texture> attackFrames2(6);
@@ -224,10 +235,15 @@ void secondLevel()
     TrampaTecho techo2(techoFrames, sf::Vector2f(1385, 340), player);
     TrampaTecho techo3(techoFrames, sf::Vector2f(1495, 340), player);
 
-     TrampaWorm gusano1(wormFrames, sf::Vector2f(793, 467), player);
+    TrampaWorm gusano1(wormFrames, sf::Vector2f(793, 467), player);
     TrampaWorm gusano2(wormFrames, sf::Vector2f(864, 467), player);
     TrampaWorm gusano3(wormFrames, sf::Vector2f(935, 467), player);
     TrampaWorm gusano4(wormFrames, sf::Vector2f(1006, 467), player);
+
+    TrampaFuego fuego1(fuegoFrames, sf::Vector2f(1637, 340), player);
+    TrampaFuego fuego2(fuegoFrames, sf::Vector2f(1757, 371), player);
+    TrampaFuego fuego3(fuegoFrames, sf::Vector2f(1877, 402), player);
+
 
 
 
@@ -251,6 +267,20 @@ void secondLevel()
         //error
     }
     Platform flotante(flotanteTexture, Vector2f(1500, 399));
+
+    Texture flotanteTexture2;
+    if (!flotanteTexture2.loadFromFile("flotante.png"))
+    {
+        //error
+    }
+    Platform flotante2(flotanteTexture2, Vector2f(1500, 399));
+
+    Texture flotanteTexture3;
+    if (!flotanteTexture3.loadFromFile("flotante.png"))
+    {
+        //error
+    }
+    Platform flotante3(flotanteTexture3, Vector2f(1500, 399));
 
 
     Texture platform2Texture;
@@ -321,6 +351,9 @@ void secondLevel()
     sf::Sprite fondoDuplicadoSprite(castleTexture);
     fondoDuplicadoSprite.setPosition(1250, 260);
 
+    Sprite otrofondo(castleTexture);
+    otrofondo.setPosition(2070, 260);
+
 
     //PLATAFORMAS LARGAS
     platforms.push_back(Platform(platformTexture, Vector2f(509, 496)));
@@ -351,8 +384,17 @@ void secondLevel()
     platforms.push_back(Platform(platformTexture, Vector2f(1486, 399)));
 
     //PLATFORMAS FLOTANTES
-    platforms.push_back(Platform(flotanteTexture, Vector2f(1560, 399)));
+    platforms.push_back(Platform(flotanteTexture, Vector2f(1630, 399)));
+    platforms.push_back(Platform(flotanteTexture2, Vector2f(1750, 430)));
+    platforms.push_back(Platform(flotanteTexture3, Vector2f(1870, 461)));
 
+    //SIGUIENTES PLATAFORMAS LARGAS
+    platforms.push_back(Platform(platformTexture, Vector2f(1960, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(2031, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(2102, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(2173, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(2244, 496)));
+    platforms.push_back(Platform(platformTexture, Vector2f(2315, 496)));
 
 
     sf::Time deltaTime = clock1.restart();
@@ -367,6 +409,8 @@ void secondLevel()
     while (window.isOpen())
     {
        
+
+
         gusano1.cargar(dt);
         gusano2.cargar(dt);
         gusano3.cargar(dt);
@@ -376,23 +420,26 @@ void secondLevel()
         techo2.cargar(dt);
         techo3.cargar(dt);
 
+        FloatRect flotanteBounds = flotante.getGlobalBounds();
+        FloatRect Donde = player.getGlobalBounds();
 
-        if (moveRight) {
-            if (flotante.getPosition().x < targetPosition.x) {
-                flotante.move(sf::Vector2f(platformSpeed * dt, 0.0f));
-            }
-            else {
-                moveRight = false;  // Cambia la dirección del movimiento
-            }
+        if ((Donde).intersects(flotanteBounds)) {
+            isOnFlotante = true;
         }
-        else {
-            if (flotante.getPosition().x > 1570) {
-                flotante.move(sf::Vector2f(-platformSpeed * dt, 0.0f));
-            }
-            else {
-                moveRight = true;  // Cambia la dirección del movimiento
-            }
+       
+        FloatRect flotanteBounds2 = flotante2.getGlobalBounds();
+        FloatRect Donde2 = player.getGlobalBounds();
+
+        if ((Donde2).intersects(flotanteBounds2)) {
+            isOnFlotante2 = true;
         }
+
+        FloatRect flotanteBounds3 = flotante3.getGlobalBounds();
+        FloatRect Donde3 = player.getGlobalBounds();
+        if ((Donde3).intersects(flotanteBounds3)) {
+            isOnFlotante3 = true;
+        }
+
 
 
         isPerformingAction = false;
@@ -825,6 +872,7 @@ void secondLevel()
         window.draw(fondoDuplicadoSprite);
      
         window.draw(castle);
+        window.draw(otrofondo);
      
        
 
@@ -835,6 +883,8 @@ void secondLevel()
         for (const auto& platform2 : platforms) {
             platform2.drawTo(window);
         }
+
+        
 
 
         
@@ -853,6 +903,127 @@ void secondLevel()
         bad.draw(window);
 
         player.drawTo(window, view);
+
+        if (isOnFlotante) {
+
+            sf::Texture mTexture;
+            sf::Texture nTexture;
+
+            if (!mTexture.loadFromFile("m.png")) {
+
+                std::cerr << "Error loading sprite texture" << std::endl;
+
+            }
+
+            if (!nTexture.loadFromFile("n.png")) {
+
+                std::cerr << "Error loading sprite texture" << std::endl;
+
+            }
+
+            sf::Sprite lam(mTexture);
+            sf::Sprite lan(nTexture);
+
+            lan.setPosition(1610, 370);
+            lam.setPosition(1685, 370);
+
+            window.draw(lan);
+            window.draw(lam);
+
+        }
+
+
+        if (isOnFlotante2) {
+
+            sf::Texture mTexture;
+            sf::Texture nTexture;
+
+            if (!mTexture.loadFromFile("V.png")) {
+
+                std::cerr << "Error loading sprite texture" << std::endl;
+
+            }
+
+            if (!nTexture.loadFromFile("B.png")) {
+
+                std::cerr << "Error loading sprite texture" << std::endl;
+
+            }
+
+            sf::Sprite lav(mTexture);
+            sf::Sprite lab(nTexture);
+
+            lav.setPosition(1730, 410);
+            lab.setPosition(1805, 410);
+
+            window.draw(lav);
+            window.draw(lab);
+
+        }
+
+        if (isOnFlotante3) {
+
+            sf::Texture mTexture;
+            sf::Texture nTexture;
+
+            if (!mTexture.loadFromFile("X.png")) {
+
+                std::cerr << "Error loading sprite texture" << std::endl;
+
+            }
+
+            if (!nTexture.loadFromFile("C.png")) {
+
+                std::cerr << "Error loading sprite texture" << std::endl;
+
+            }
+
+            sf::Sprite lax(mTexture);
+            sf::Sprite lac(nTexture);
+
+            lax.setPosition(1850, 440);
+            lac.setPosition(1925, 440);
+
+            window.draw(lax);
+            window.draw(lac);
+
+        }
+
+        
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
+            Mpressed = true;
+            
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::V)) {
+            Vpressed = true;
+
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::C)) {
+            Cpressed = true;
+
+        }
+
+        if (Vpressed) {
+            fuego2.actualizar(dt);
+            fuego2.draw(window);
+
+        }
+
+        if (Cpressed) {
+            fuego3.actualizar(dt);
+            fuego3.draw(window);
+
+        }
+
+
+        if (Mpressed) {
+            fuego1.actualizar(dt);
+            fuego1.draw(window);
+
+        }
         window.display();
     }
 }
