@@ -1162,7 +1162,7 @@ void game()
 
 
     Cube cube(Vector2f(20.00f, 38.00f));
-    cube.setPosition(Vector2f(680, 420));
+    cube.setPosition(Vector2f(680, 430));
     cube.setColor(sf::Color(255, 0, 0, 60));
 
     AttackCube attack(Vector2f(20.00f, 38.00f));
@@ -1171,7 +1171,7 @@ void game()
 
     Enemy bad(Vector2f(32.00f, 40.00f));
     bad.setColor(sf::Color(0, 0, 255, 60));
-    bad.setPosition(Vector2f(700, 420));
+    bad.setPosition(Vector2f(1031, 436));
 
     Player player(Vector2f(100.0f, 45.0f));
     player.setTexture(walkingFrames[0]);
@@ -1301,7 +1301,20 @@ void game()
 
     while (window.isOpen())
     {
+        FloatRect ataqueBounds = attack.getGlobalBounds();
+        FloatRect EnemigoBounds = bad.getGlobalBounds();
+
+        if (ataqueBounds.intersects(EnemigoBounds)) {
+
+            enemigo.receiveDamage(10);
+
+
+
+        }
         
+        
+
+
 
 
         canon.update(dt);

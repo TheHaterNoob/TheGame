@@ -7,11 +7,39 @@
 class Enemigo {
 public:
     bool isFacingLeft;
+    int vida_enemigo;
+    bool enemigo_muerto;
+
+
     Enemigo(sf::Vector2f size) {
         enemigo.setSize(size);
         setOriginAndScale();
         isFacingLeft = true;
+        vida_enemigo = 100;
+        enemigo_muerto;
     }
+
+
+    void receiveDamage(int damage) {
+        if (damage >= vida_enemigo) {
+            vida_enemigo = 0;
+        }
+        else {
+            vida_enemigo -= damage;
+        }
+
+        std::cerr << vida_enemigo << std::endl;
+
+        if (vida_enemigo <= 0) {
+            std::cout << "ENEMIGO MUERTO" << std::endl;
+            enemigo_muerto = true;
+
+        }
+
+    }
+
+
+
     void setFacingLeft(bool facingLeft) {
         isFacingLeft = facingLeft;
         if (isFacingLeft) {
