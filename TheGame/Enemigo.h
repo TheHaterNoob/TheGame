@@ -16,7 +16,7 @@ public:
         setOriginAndScale();
         isFacingLeft = true;
         vida_enemigo = 100;
-        enemigo_muerto;
+        enemigo_muerto=false;
     }
 
 
@@ -27,15 +27,11 @@ public:
         else {
             vida_enemigo -= damage;
         }
-
         std::cerr << vida_enemigo << std::endl;
-
         if (vida_enemigo <= 0) {
             std::cout << "ENEMIGO MUERTO" << std::endl;
             enemigo_muerto = true;
-
         }
-
     }
 
 

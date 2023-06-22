@@ -35,12 +35,17 @@ sf::Clock clock1;
 bool isAttacking2 = false;
 const float ROLL_FRAME_SPEED = 2.0f;
 const float ROLL_DISTANCE = 1.0f;
-
+sf::Clock animationTimer2;
+float animationSpeed = 0.15f; 
+bool shouldUpdateFrame = false;
 bool isAttacking = false;
 bool isCrouching = false;
 const Vector2f backgroundLimitTopLeft(720, 0);
 const Vector2f backgroundLimitBottomRight(2130, 421);
 int currentAttackFrame = 0;
+int enemyWalkingFrame1 = 0;
+int enemydeathFrame1 = 0;
+int enemytakehit1 = 0;
 int currentWalkingFrame = 0;
 int currentDashFrame = 0;
 bool isClimbing = false;
@@ -1115,6 +1120,30 @@ void game()
             std::cerr << "Error loading frame " << i << std::endl;
         }
     }
+    std::vector<Texture> walkEnemigo(4);
+    for (int i = 1; i <= 4; i++)
+    {
+        if (!walkEnemigo[i - 1].loadFromFile("walk" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading frame " << i << std::endl;
+        }
+    }
+    std::vector<Texture> takehitEnemigo(4);
+    for (int i = 1; i <= 4; i++)
+    {
+        if (!takehitEnemigo[i - 1].loadFromFile("takehit" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading frame " << i << std::endl;
+        }
+    }
+    std::vector<Texture> deathEnemigo(4);
+    for (int i = 1; i <= 4; i++)
+    {
+        if (!deathEnemigo[i - 1].loadFromFile("death" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading frame " << i << std::endl;
+        }
+    }
     std::vector<Texture> dashFrames(2);
     for (int i = 1; i <= 2; i++)
     {
@@ -1169,14 +1198,14 @@ void game()
     attack.setColor(sf::Color(0, 255, 0, 60));
     
 
-    Enemy bad(Vector2f(32.00f, 40.00f));
+    Enemy bad(Vector2f(40.00f, 45.00f));
     bad.setColor(sf::Color(0, 0, 255, 60));
     bad.setPosition(Vector2f(1031, 436));
 
     Player player(Vector2f(100.0f, 45.0f));
     player.setTexture(walkingFrames[0]);
 
-    Enemigo enemigo(Vector2f(40.0f, 45.00f));
+    Enemigo enemigo(Vector2f(50.0f, 55.00f));
     enemigo.setTexture(idleEnemigo[0]);
     
     std::vector<Texture> escalandoFrames(1); // Inicializar el vector con un tamaño de 1
@@ -1306,10 +1335,35 @@ void game()
 
         if (ataqueBounds.intersects(EnemigoBounds)) {
 
-            enemigo.receiveDamage(10);
-
-
-
+            enemigo.receiveDamage(5);
+            if (!enemigo.enemigo_muerto)
+            {
+                enemigo.setTexture(takehitEnemigo[0]);
+                enemigo.setTexture(takehitEnemigo[1]);
+                enemigo.setTexture(takehitEnemigo[2]);
+                enemigo.setTexture(takehitEnemigo[3]);
+            }
+        }
+        if (enemigo.enemigo_muerto) {
+            if (animationTimer2.getElapsedTime().asSeconds() >= animationSpeed)
+            {
+                animationTimer2.restart();
+                shouldUpdateFrame = true;
+            }
+            if (shouldUpdateFrame)
+            {
+                if (enemydeathFrame1<4)
+                {
+                    enemydeathFrame1++;
+                }
+                if (enemydeathFrame1 >= deathEnemigo.size())
+                {
+                    enemydeathFrame1 = 0;
+                    bad.setPosition(Vector2f(0, 0));
+                }
+                enemigo.setTexture(deathEnemigo[enemydeathFrame1]);
+                shouldUpdateFrame = false;
+            }
         }
         
         
@@ -1452,8 +1506,9 @@ void game()
             Vector2f position = bad.getPosition();
             if (direction.x > 0) {
                 enemigo.setFacingLeft(false);
-                Vector2f vecbad(bad.getX() + 23, bad.getY() + 16);
+                Vector2f vecbad(bad.getX() + 23, bad.getY() + 10);
                 enemigo.setPosition(vecbad);
+
                 if (bad.getGlobalBounds().intersects(wood.getGlobalBounds()))
                 {
                     enemy1canmove = false;
@@ -1462,14 +1517,30 @@ void game()
             else {
                 enemy1canmove = true;
                 enemigo.setFacingLeft(true);
-                Vector2f vecbad(bad.getX() + 10, bad.getY() + 16);
+                Vector2f vecbad(bad.getX() + 10, bad.getY() + 10);
                 enemigo.setPosition(vecbad);
 
             }
 
             position += enemyspeed;
-            if (enemy1onplatform && enemy1canmove)
+            if (enemy1onplatform && enemy1canmove && ! enemigo.enemigo_muerto)
            {
+                if (animationTimer2.getElapsedTime().asSeconds() >= animationSpeed)
+                {
+                    animationTimer2.restart();
+                    shouldUpdateFrame = true;
+                }
+                if (shouldUpdateFrame)
+                {
+                    enemyWalkingFrame1++;
+                    if (enemyWalkingFrame1 >= walkEnemigo.size())
+                    {
+                        enemyWalkingFrame1 = 0;
+                    }
+                    enemigo.setTexture(walkEnemigo[enemyWalkingFrame1]);
+                    shouldUpdateFrame = false;
+                }
+
                 bad.setPosition(position);
             }
 
@@ -1551,7 +1622,7 @@ void game()
             }
         }
 
-        if (!isDashing && !isRolling) {
+        if (!isDashing && !isRolling && !isDead) {
             bool isAKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
                 if (isAKeyPressed && !wasAKeyPressed  && !isAttacking && !isAttacking2 && attackTimer <= 0.0f && canAttackA)
                 {
@@ -1691,7 +1762,7 @@ void game()
         {
             if (player.isFacingLeft)
             {
-                veck = Vector2f(cube.getX() - 30, cube.getY() + 1);
+                veck = Vector2f(cube.getX() - 45, cube.getY() + 1);
             }
             else {
                 veck = Vector2f(cube.getX() + 30, cube.getY() + 1);
@@ -1700,7 +1771,8 @@ void game()
             {
                 sf::Texture& attackFrame = attackFrames2[currentAttackFrame];
                 player.setTexture(attackFrame);
-
+                Vector2f hola(40, 38);
+                attack.setSize(hola);
                 attack.setPosition(veck);
                 currentAttackFrame++;
                 if (attack.getGlobalBounds().intersects(bad.getGlobalBounds()))
@@ -1742,7 +1814,8 @@ void game()
             {
                 sf::Texture& attackFrame = attackFrames[currentAttackFrame];
                 player.setTexture(attackFrame);
-
+                Vector2f hola(20, 38);
+                attack.setSize(hola);
                 attack.setPosition(veck);
                 currentAttackFrame++;
                 if (attack.getGlobalBounds().intersects(bad.getGlobalBounds()))

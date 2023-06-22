@@ -31,8 +31,13 @@ public:
         shape.move(distance);
     }
     sf::Vector2f getPosition() {
+       
         return shape.getPosition();
     }
+    void setSize(sf::Vector2f xd) {
+        shape.setSize(xd);
+    }
+    
 private:
     sf::RectangleShape shape;
 };
