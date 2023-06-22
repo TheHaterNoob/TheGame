@@ -9,7 +9,7 @@ public:
     bool isFacingLeft;
     int life;
     sf::RectangleShape lifeBar;
-
+    bool tamuerto;
 
 
     Player(sf::Vector2f size) {
@@ -20,7 +20,8 @@ public:
 
         lifeBar.setSize(sf::Vector2f(87, 6));
         lifeBar.setFillColor(sf::Color::Red);
-        
+        tamuerto = false;
+
     }
 
     void receiveDamage(int damage) {
@@ -35,6 +36,8 @@ public:
 
         if (life <= 0) {
             std::cout << "MUERTO" << std::endl;
+            tamuerto = true;
+
         }
 
         float lifeBarWidth = static_cast<float>(life) / 100 * 87; 
@@ -45,7 +48,7 @@ public:
     void drawTo(sf::RenderWindow& window, sf::View& camera) {
 
         sf::Texture barraTexture;
-        if (!barraTexture.loadFromFile("barranew.png")) {
+        if (!barraTexture.loadFromFile("barra124.png")) {
             std::cerr << "Error loading barra texture" << std::endl;
         }
 
@@ -66,6 +69,26 @@ public:
         window.draw(barraSprite);
         window.draw(player);
         window.draw(lifeBar);
+
+        if (tamuerto) {
+
+           
+
+            sf::Texture muertoTexture;
+            if (!muertoTexture.loadFromFile("hasmuerto2.png")) {
+                std::cerr << "Error loading 'has muerto' texture" << std::endl;
+            }
+             sf::Sprite muertoSprite(muertoTexture);
+
+            float xPos3 = cameraPosition.x - (cameraSize.x / 2) + (cameraSize.x / 2) - 160;
+            float yPos3 = cameraPosition.y + (cameraSize.y / 2) - 190;
+
+           
+           muertoSprite.setPosition(xPos3, yPos3);
+
+            window.draw(muertoSprite);
+        }
+
     }
 
     void move(sf::Vector2f distance) {
