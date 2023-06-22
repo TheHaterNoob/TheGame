@@ -14,6 +14,7 @@
 #include "TrampaTecho.h"
 #include "TrampaFuego.h"
 
+bool completed = false;
 int deathFrameIndex = 0;
 bool isDead = false;
 const float GRAVITY = 0.5f;
@@ -79,10 +80,7 @@ bool Cpressed = false;
 bool quedate = false;
 
 bool isWalkingCrouched = false;
-    RenderWindow window(VideoMode(1366, 768), "THE GAME", Style::Fullscreen);
 
-
-std::vector<Platform> platforms;
 
 sf::Vector2f normalize(const sf::Vector2f& vector)
 {
@@ -93,9 +91,10 @@ sf::Vector2f normalize(const sf::Vector2f& vector)
     else
         return vector;
 }
-void secondLevel()
+void secondLevel(sf::RenderWindow& window)
 {
-   
+    window.clear();
+    std::vector<Platform> platforms;
     std::vector<sf::Texture> techoFrames(14);
     for (int i = 1; i <= 14; i++)
     {
@@ -304,7 +303,6 @@ void secondLevel()
     }
     Sprite puerta(puertaTexture);
     puerta.setPosition(2250, 427);
-
     Texture signoTexture;
     if (!signoTexture.loadFromFile("letrero1.png"))
     {
@@ -414,7 +412,7 @@ void secondLevel()
 
     while (window.isOpen())
     {
-       
+        window.clear();
 
 
         gusano1.cargar(dt);
@@ -906,8 +904,9 @@ void secondLevel()
 
             cube.setPosition(playerPosition);
         }
-        window.clear(Color::Blue);
-        window.setView(view);
+        window.clear();
+        window.clear(Color::Red);
+
         window.draw(fondoDuplicadoSprite);
      
         window.draw(castle);
@@ -923,10 +922,7 @@ void secondLevel()
             platform2.drawTo(window);
         }
 
-        
-
-
-        
+        window.clear();
         cube.draw(window);
         attack.draw(window);
         techo1.draw(window);
@@ -941,7 +937,7 @@ void secondLevel()
         enemigo.drawTo(window);
         bad.draw(window);
 
-        player.drawTo(window, view);
+
 
         if (isOnFlotante) {
 
@@ -1026,6 +1022,7 @@ void secondLevel()
             window.draw(lax);
             window.draw(lac);
 
+
         }
 
         
@@ -1063,18 +1060,21 @@ void secondLevel()
             fuego1.draw(window);
 
         }
-
-
+        player.drawTo(window, view);
+        window.setView(view);
 
         window.display();
+
     }
+
 }
 
 bool movingLeft = true;  
 float ballSpeed = 5.0f;
-
-void game()
+sf::RectangleShape entrada;
+void game(sf::RenderWindow& window)
 {
+    std::vector<Platform> platforms;
     std::vector<sf::Texture> canonTextures(7);
     for (int i = 1; i <= 7; i++)
     {
@@ -1362,6 +1362,7 @@ void game()
 
 
     bool damageApplied = false;
+
     bool enemy1onplatform = true;
     bool enemy1canmove = true;
 
@@ -1369,7 +1370,20 @@ void game()
     {
         FloatRect ataqueBounds = attack.getGlobalBounds();
         FloatRect EnemigoBounds = bad.getGlobalBounds();
+        
+        entrada.setPosition(Vector2f(2250, 450));
+        entrada.setSize(Vector2f(50, 50));
+        if (cube.getGlobalBounds().intersects(entrada.getGlobalBounds()))
+        {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+            {
 
+                window.clear();
+                return;
+                             
+            }
+            
+        }
         if (ataqueBounds.intersects(EnemigoBounds)) {
 
             enemigo.receiveDamage(5);
@@ -1975,7 +1989,7 @@ void game()
                 viewCenter.y = backgroundLimitBottomRight.y;
 
             view.setCenter(viewCenter);
-            std::cerr << cube.getX() << std::endl;
+
             Vector2f vectorleft(525, cube.getY());
             Vector2f vectorright(2315, cube.getY());
             if (cube.getX()<=525)
@@ -2097,7 +2111,7 @@ void menu::MoveUp()
     }
 }
 
-void menu1()
+void menu1(sf::RenderWindow& window)
 {
 
     menu menu(1366, 768);
@@ -2163,14 +2177,15 @@ void menu1()
             }
             if (pagenum == 0)
             {
-                game();
+                game(window);
+                secondLevel(window);
                 window.close();
                 
                 break;
             }
             if (pagenum == 1)
             {
-                secondLevel();
+                secondLevel(window);
                 window.close();
                 break;
             }
@@ -2180,6 +2195,21 @@ void menu1()
 
 int main()
 {
-    menu1();
+    RenderWindow window(VideoMode(1366, 768), "THE GAME", Style::Fullscreen);
+    menu1(window);
+
+
+        while (window.isOpen()) 
+        {
+            sf::Event event;
+            while (window.pollEvent(event))
+            {
+                if (event.type == sf::Event::Closed)
+                    window.close();
+            }
+
+            window.display();
+        }
+
     return 0;
 }
