@@ -218,7 +218,7 @@ void secondLevel(sf::RenderWindow& window)
 
 
     Cube cube(Vector2f(20.00f, 38.00f));
-    cube.setPosition(Vector2f(680, 420));
+    cube.setPosition(Vector2f(640, 420));
     cube.setColor(sf::Color(255, 0, 0, 60));
 
     AttackCube attack(Vector2f(20.00f, 38.00f));
@@ -240,10 +240,9 @@ void secondLevel(sf::RenderWindow& window)
     TrampaTecho techo2(techoFrames, sf::Vector2f(1385, 340), player);
     TrampaTecho techo3(techoFrames, sf::Vector2f(1495, 340), player);
 
-    TrampaWorm gusano1(wormFrames, sf::Vector2f(793, 467), player);
-    TrampaWorm gusano2(wormFrames, sf::Vector2f(864, 467), player);
-    TrampaWorm gusano3(wormFrames, sf::Vector2f(935, 467), player);
-    TrampaWorm gusano4(wormFrames, sf::Vector2f(1006, 467), player);
+    TrampaWorm gusano1(wormFrames, sf::Vector2f(710, 467), player);
+    TrampaWorm gusano2(wormFrames, sf::Vector2f(830, 467), player);
+    TrampaWorm gusano4(wormFrames, sf::Vector2f(960, 467), player);
 
     TrampaFuego fuego1(fuegoFrames, sf::Vector2f(1637, 340), player);
     TrampaFuego fuego2(fuegoFrames, sf::Vector2f(1757, 371), player);
@@ -421,7 +420,6 @@ void secondLevel(sf::RenderWindow& window)
 
         gusano1.cargar(dt);
         gusano2.cargar(dt);
-        gusano3.cargar(dt);
         gusano4.cargar(dt);
 
         techo1.cargar(dt);
@@ -918,7 +916,7 @@ void secondLevel(sf::RenderWindow& window)
 
         gusano1.draw(window);
         gusano2.draw(window);
-        gusano3.draw(window);
+   
         gusano4.draw(window);
         player.drawTo(window, view);
 

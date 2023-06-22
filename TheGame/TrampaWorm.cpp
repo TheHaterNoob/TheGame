@@ -12,7 +12,7 @@ void TrampaWorm::cargar(float deltaTime)
 
     const float WormCooldown = 25.0f;
     static float WormTimer = 0.0f;
-
+    bool dañito = false;
 
     WormTimer += deltaTime;
 
@@ -29,9 +29,19 @@ void TrampaWorm::cargar(float deltaTime)
             sf::FloatRect trapBounds = entitySprite.getGlobalBounds();
             sf::FloatRect playerBounds = player.getGlobalBounds();
 
-            if (trapBounds.intersects(playerBounds))
-            {
-                player.receiveDamage(80);
+
+            if (player.life > 0) {
+                if (trapBounds.intersects(playerBounds))
+                {
+                    if (!dañito) {
+
+                        dañito = true;
+                        player.receiveDamage(80);
+                    }
+                }
+                else {
+                    dañito = false;
+                }
             }
         }
 

@@ -11,7 +11,7 @@ void TrampaTecho::cargar(float deltaTime)
 
     const float TechoCooldown = 25.0f;
     static float TechoTimer = 0.0f;
-
+    bool dañoo = false;
 
     TechoTimer += deltaTime;
 
@@ -25,11 +25,28 @@ void TrampaTecho::cargar(float deltaTime)
         if (currentFrameIndex >= 1 && currentFrameIndex <= 4)
         {
             sf::FloatRect trapBounds = entitySprite.getGlobalBounds();
+
+            float xPadding = 14.0f; // Valor de ajuste para restar a los límites en x
+
+            // Restar el valor de xPadding a los límites izquierdo y derecho
+            trapBounds.left += xPadding;
+            trapBounds.width -= 2 * xPadding;
+
+
+
             sf::FloatRect playerBounds = player.getGlobalBounds();
 
-            if (trapBounds.intersects(playerBounds))
-            {
-                player.receiveDamage(80);
+            if (player.life > 0) {
+                if (trapBounds.intersects(playerBounds))
+                {
+                    if (!dañoo) {
+                        dañoo = true;
+                        player.receiveDamage(80);
+                    }
+                }
+                else {
+                    dañoo = false;
+                }
             }
         }
 
