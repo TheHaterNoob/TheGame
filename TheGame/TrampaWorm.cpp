@@ -36,7 +36,7 @@ void TrampaWorm::cargar(float deltaTime)
                     if (!dañito) {
 
                         dañito = true;
-                        player.receiveDamage(80);
+                        player.receiveDamage(10);
                     }
                 }
                 else {

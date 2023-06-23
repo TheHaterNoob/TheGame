@@ -26,7 +26,7 @@ void TrampaFuego::actualizar(float deltaTime)
 
             if (trapBounds.intersects(playerBounds))
             {
-                jugador.receiveDamage(34);
+                jugador.receiveDamage(10);
             }
         
 

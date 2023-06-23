@@ -41,7 +41,7 @@ void TrampaTecho::cargar(float deltaTime)
                 {
                     if (!dañoo) {
                         dañoo = true;
-                        player.receiveDamage(80);
+                        player.receiveDamage(10);
                     }
                 }
                 else {

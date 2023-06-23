@@ -13,6 +13,7 @@
 #include "TrampaWorm.h"
 #include "TrampaTecho.h"
 #include "TrampaFuego.h"
+#include "Devil.h"
 
 bool completed = false;
 int deathFrameIndex = 0;
@@ -80,7 +81,49 @@ bool Cpressed = false;
 bool quedate = false;
 
 bool isWalkingCrouched = false;
+void displayGameOver()
+{
+    // Create the game window
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Game Over");
 
+    // Load font
+    sf::Font font;
+    if (!font.loadFromFile("fuente3.ttf"))
+    {
+        // Error loading font
+        return;
+    }
+
+    // Create the Game Over text
+    sf::Text gameOverText("Game Over", font, 48);
+    gameOverText.setFillColor(sf::Color::Red);
+    gameOverText.setPosition(window.getSize().x / 2 - gameOverText.getLocalBounds().width / 2,
+        window.getSize().y / 2 - gameOverText.getLocalBounds().height / 2);
+
+    // Game Over loop
+    while (window.isOpen())
+    {
+        // Process events
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+            {
+                window.close();
+            }
+        }
+
+        // Clear the window
+        window.clear();
+
+        // Draw the Game Over text
+        window.draw(gameOverText);
+
+        // Display the contents of the window
+        window.display();
+    }
+}
+sf::Clock clock420;
 
 sf::Vector2f normalize(const sf::Vector2f& vector)
 {
@@ -93,7 +136,25 @@ sf::Vector2f normalize(const sf::Vector2f& vector)
 }
 void secondLevel(sf::RenderWindow& window)
 {
+    Devil devil(sf::Vector2f(400, 300), sf::Vector2f(50, 50), 100.0f);
+    std::vector<sf::Texture> devilFrames(9);
+    for (int i = 1; i <= 9; i++)
+    {
 
+        if (!devilFrames[i - 1].loadFromFile("demon_walk_" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading death frame " << i << std::endl;
+        }
+    }
+    std::vector<sf::Texture> deathFrames(9);
+    for (int i = 1; i <= 9; i++)
+    {
+
+        if (!deathFrames[i - 1].loadFromFile("morir" + std::to_string(i) + ".png"))
+        {
+            std::cerr << "Error loading death frame " << i << std::endl;
+        }
+    }
     std::vector<Platform> platforms;
     std::vector<sf::Texture> techoFrames(14);
     for (int i = 1; i <= 14; i++)
@@ -541,7 +602,7 @@ void secondLevel(sf::RenderWindow& window)
 
        
 
-        if (!isDashing) {
+        if (!isDashing && !isRolling && !isDead) {
             bool isAKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
             if (isAKeyPressed && !wasAKeyPressed && !isAttacking && !isAttacking2 && attackTimer <= 0.0f && canAttackA)
             {
@@ -771,7 +832,41 @@ void secondLevel(sf::RenderWindow& window)
 
             isPerformingAction = true;
         }
+        if (player.life <= 0)
+        {
+            isDead = true;
+        }
+        if (isDead)
+        {
+            // Actualizar la animación cada cierto tiempo
+            if (animationTimer.getElapsedTime().asSeconds() > 0.2f)
+            {
+                player.setTexture(deathFrames[deathFrameIndex]);
+                if (deathFrameIndex < deathFrames.size() - 1)
+                {
+                    deathFrameIndex++;
+                    animationTimer.restart();
 
+                }
+                if (deathFrameIndex == 7)
+                {
+                    window.close();
+                    displayGameOver();
+                }
+
+                if (deathFrameIndex >= deathFrames.size())
+                {
+
+
+                    // La animación de morirse ha terminado, puedes realizar acciones adicionales aquí
+                    // por ejemplo, reiniciar el nivel o mostrar una pantalla de Game Over.
+                    // También puedes establecer isDead en false para que la animación no se reproduzca continuamente.
+                    isDead = false;
+                    player.setTexture(deathFrames[8]);
+                }
+
+            }
+        }
 
 
         if (isDashing) {
@@ -871,6 +966,9 @@ void secondLevel(sf::RenderWindow& window)
         {
             view.setCenter(2150, view.getCenter().y);
             quedate = true;
+
+            devil.setTexture(devilFrames[1]);
+            devil.setPos(Vector2f(2200, cube.getY()-30));
         }
         Vector2f vectorleft(540, cube.getY());
         if (cube.getX()<=540)
@@ -919,9 +1017,11 @@ void secondLevel(sf::RenderWindow& window)
    
         gusano4.draw(window);
         player.drawTo(window, view);
+        float deltaTime2 = clock420.restart().asSeconds();
+        
+        devil.update(deltaTime2, window);
+        devil.draw(window);
 
-        enemigo.drawTo(window);
-        bad.draw(window);
         for (const auto& platform : platforms) {
             platform.drawTo(window);
         }
@@ -948,10 +1048,10 @@ void secondLevel(sf::RenderWindow& window)
 
             lan.setPosition(1610, 370);
             lam.setPosition(1685, 370);
-
+            window.clear();
             window.draw(lan);
             window.draw(lam);
-
+           
         }
 
 
@@ -977,10 +1077,10 @@ void secondLevel(sf::RenderWindow& window)
 
             lav.setPosition(1730, 410);
             lab.setPosition(1805, 410);
-
+            window.clear();
             window.draw(lav);
             window.draw(lab);
-
+            
         }
 
         if (isOnFlotante3) {
@@ -1005,13 +1105,12 @@ void secondLevel(sf::RenderWindow& window)
 
             lax.setPosition(1850, 440);
             lac.setPosition(1925, 440);
-
+            window.clear();
             window.draw(lax);
             window.draw(lac);
-
-
+            
         }
-
+        
         
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
@@ -1055,6 +1154,18 @@ float ballSpeed = 5.0f;
 sf::RectangleShape entrada;
 void game(sf::RenderWindow& window)
 {
+    sf::Font font;
+    if (!font.loadFromFile("fuente3.ttf"))
+    {
+
+    }
+
+    // Create the Game Over text
+    sf::Text gameOverText("Game Over", font, 48);
+    gameOverText.setFillColor(sf::Color::Red);
+    gameOverText.setPosition(window.getSize().x / 2 - gameOverText.getLocalBounds().width / 2,
+        window.getSize().y / 2 - gameOverText.getLocalBounds().height / 2);
+
     std::vector<Platform> platforms;
     std::vector<sf::Texture> canonTextures(7);
     for (int i = 1; i <= 7; i++)
@@ -1358,8 +1469,9 @@ void game(sf::RenderWindow& window)
         {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
             {
-
-                window.clear();
+                
+                menu1(window);
+                window.close();
                 return;
                              
             }
@@ -1397,11 +1509,6 @@ void game(sf::RenderWindow& window)
                 shouldUpdateFrame = false;
             }
         }
-        
-        
-
-
-
 
         canon.update(dt);
 
@@ -1422,10 +1529,18 @@ void game(sf::RenderWindow& window)
                 {
                     deathFrameIndex++;
                     animationTimer.restart();
+                    
+                }
+                if (deathFrameIndex==7)
+                {
+                    window.close();
+                    displayGameOver();
                 }
 
                 if (deathFrameIndex >= deathFrames.size())
                 {
+                    
+                    
                     // La animación de morirse ha terminado, puedes realizar acciones adicionales aquí
                     // por ejemplo, reiniciar el nivel o mostrar una pantalla de Game Over.
                     // También puedes establecer isDead en false para que la animación no se reproduzca continuamente.
@@ -1467,7 +1582,7 @@ void game(sf::RenderWindow& window)
             {
                 if (!damageApplied)
                 {
-                    player.receiveDamage(50);
+                    player.receiveDamage(20);
                     damageApplied = true;
                 }
 
@@ -2160,7 +2275,7 @@ void menu1(sf::RenderWindow& window)
             if (pagenum == 0)
             {
                 game(window);
-                secondLevel(window);
+                menu1(window);
                 window.close();
                 
                 break;

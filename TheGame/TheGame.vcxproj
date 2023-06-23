@@ -139,6 +139,7 @@
     <ClCompile Include="AttackCube.cpp" />
     <ClCompile Include="Canon.cpp" />
     <ClCompile Include="cube.cpp" />
+    <ClCompile Include="Devil.cpp" />
     <ClCompile Include="Enemigo.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Flotante.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="AttackCube.h" />
     <ClInclude Include="Canon.h" />
     <ClInclude Include="cube.h" />
+    <ClInclude Include="Devil.h" />
     <ClInclude Include="Enemigo.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Flotante.h" />
